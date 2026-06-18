@@ -696,10 +696,6 @@ body {
       <button class="story-voice-btn" id="storyVoiceBtn" onclick="toggleStoryVoice()">
         <span id="voiceBtnText">爸爸讲故事</span>
       </button>
-      <div class="voice-hint" id="voiceHint">如果声音不够自然，可以点击下方「高品质语音」体验更温暖的朗读</div>
-      <button class="story-voice-btn" id="hqVoiceBtn" onclick="toggleHQVoice()" style="margin-top:8px; background: linear-gradient(135deg, #FFE0E8 0%, #FFC8D8 100%);">
-        <span id="hqBtnText">高品质语音（推荐）</span>
-      </button>
     </div>
   </div>
 
@@ -1102,33 +1098,32 @@ function switchTab(lang) {
   renderStory(lang);
 }
 
-// ============ STORY VOICE ============
+// ============ STORY VOICE (Disney-style) ============
 let isSpeaking = false;
-let storyUtterance = null;
 let voiceList = [];
 let preferredZhVoice = null;
 let preferredEnVoice = null;
+let speechKeepAlive = null;
 
 function initVoices() {
   if (!window.speechSynthesis) return;
-  const loadVoices = function() {
+  function loadVoices() {
     voiceList = window.speechSynthesis.getVoices();
-    // 优先选择更自然的语音
-    // 中文：优先选择 Ting-Ting, Yaoyao (Apple), 或 Microsoft 的语音
-    const zhCandidates = voiceList.filter(v => v.lang && v.lang.includes('zh'));
-    preferredZhVoice = zhCandidates.find(v => /ting-?ting|yaoyao|meijia|li-?na/i.test(v.name))
-      || zhCandidates.find(v => /microsoft/i.test(v.name))
-      || zhCandidates.find(v => /google/i.test(v.name))
-      || zhCandidates[0];
-
-    // 英文：优先选择 Samantha, Victoria, Karen, Moira, Fred 等苹果自然语音
-    const enCandidates = voiceList.filter(v => v.lang && v.lang.includes('en'));
-    preferredEnVoice = enCandidates.find(v => /samantha|victoria|karen|moira|tessa|ava/i.test(v.name))
-      || enCandidates.find(v => /microsoft/i.test(v.name))
-      || enCandidates.find(v => /google/i.test(v.name))
-      || enCandidates.find(v => /en-?us/i.test(v.lang))
-      || enCandidates[0];
-  };
+    // 中文：优先找男声，其次高质量女声
+    const zhVoices = voiceList.filter(v => v.lang && v.lang.toLowerCase().indexOf('zh') === 0);
+    preferredZhVoice = zhVoices.find(v => /male|男|yunxi|yunyang|xiaoxiao|kangkang/i.test(v.name))
+      || zhVoices.find(v => /google/i.test(v.name))
+      || zhVoices.find(v => /microsoft/i.test(v.name))
+      || zhVoices.find(v => /ting-?ting|yaoyao|meijia|huihui/i.test(v.name))
+      || zhVoices[0];
+    // 英文：优先找高质量女声
+    const enVoices = voiceList.filter(v => v.lang && v.lang.toLowerCase().indexOf('en') === 0);
+    preferredEnVoice = enVoices.find(v => /samantha|ava|allison|karen|moira|tessa|fiona|serena/i.test(v.name))
+      || enVoices.find(v => /google/i.test(v.name) && /en.*us/i.test(v.lang))
+      || enVoices.find(v => /microsoft.*(zira|aria|jenny)/i.test(v.name))
+      || enVoices.find(v => /en-?us/i.test(v.lang))
+      || enVoices[0];
+  }
   loadVoices();
   if (voiceList.length === 0) {
     window.speechSynthesis.onvoiceschanged = loadVoices;
@@ -1139,20 +1134,48 @@ function updateVoiceButtonText() {
   const textEl = document.getElementById('voiceBtnText');
   if (!textEl) return;
   if (isSpeaking) {
-    textEl.textContent = currentLang === 'zh' ? '爸爸正在讲故事...' : 'Mommy is reading...';
+    textEl.textContent = currentLang === 'zh' ? '爸爸正在讲故事...' : '妈妈正在讲故事...';
   } else {
-    textEl.textContent = currentLang === 'zh' ? '爸爸讲故事' : 'Mommy Tells a Story';
+    textEl.textContent = currentLang === 'zh' ? '爸爸讲故事' : '妈妈讲故事';
   }
 }
 
-function updateHQButtonText() {
-  const textEl = document.getElementById('hqBtnText');
-  if (!textEl) return;
-  if (isSpeaking) {
-    textEl.textContent = currentLang === 'zh' ? '爸爸在温柔地讲述...' : 'Mommy is gently reading...';
+// 将故事拆分成句子
+function splitIntoSentences(text, lang) {
+  if (lang === 'zh') {
+    return text.replace(/([。！？…])/g, '$1\n').split('\n').map(s => s.trim()).filter(s => s.length > 0);
   } else {
-    textEl.textContent = currentLang === 'zh' ? '高品质语音（推荐）' : 'High Quality Voice (Recommended)';
+    return text.replace(/([.!?])/g, '$1\n').split('\n').map(s => s.trim()).filter(s => s.length > 0);
   }
+}
+
+// 根据句子内容分析情感，动态调整语速和音调
+function analyzeSentence(sentence, lang) {
+  let rate = lang === 'zh' ? 0.75 : 0.78;
+  let pitch = lang === 'zh' ? 0.88 : 1.05;
+  // 问句：音调上扬，像在好奇地问
+  if (/[？?]/.test(sentence)) {
+    pitch += 0.12;
+    rate += 0.03;
+  }
+  // 感叹句：更有激情，语速稍快
+  else if (/[！!]/.test(sentence)) {
+    rate += 0.06;
+    pitch += 0.06;
+  }
+  // 对话内容：稍微提高音调，像在模仿角色说话
+  else if (/[\u201C\u201D\u300C\u300E"]/.test(sentence)) {
+    pitch += 0.04;
+  }
+  // 长叙述句：放慢，更温柔，像在娓娓道来
+  else if (sentence.length > 50) {
+    rate -= 0.06;
+  }
+  // 短句：稍快，轻快自然
+  else if (sentence.length < 15) {
+    rate += 0.02;
+  }
+  return { rate, pitch };
 }
 
 function toggleStoryVoice() {
@@ -1163,152 +1186,83 @@ function toggleStoryVoice() {
   }
 }
 
-function toggleHQVoice() {
-  if (isSpeaking) {
-    stopStoryVoice();
-  } else {
-    playHQVoice();
-  }
-}
-
-// 对文本进行预处理，加入自然的停顿和节奏，更像讲故事
-function preprocessStoryText(text, lang) {
-  if (lang === 'zh') {
-    // 中文：在段落之间增加明显停顿，让语气更柔和
-    return text
-      .replace(/\n\n+/g, '。\n')           // 段落之间加句号停顿
-      .replace(/([。！？；])/g, '$1，')      // 句末加逗号增加停顿
-      .replace(/([，。])/g, '$1，')         // 增加额外的轻柔停顿
-      .replace(/，，+/g, '，')              // 清理多余逗号
-      .replace(/"([^"]+)"/g, '「$1」');   // 引号转中文（更自然）
-  } else {
-    // 英文：增加停顿和节奏感
-    return text
-      .replace(/\n\n+/g, '.\n')
-      .replace(/([.!?])/g, '$1, ')
-      .replace(/([,])/g, ', ')
-      .replace(/\s+/g, ' ');
-  }
-}
-
 function playStoryVoice() {
   const story = currentLang === 'zh' ? window._zhStory : window._enStory;
   if (!story || !window.speechSynthesis) {
-    alert('您的设备暂不支持语音朗读哦');
+    alert('您的设备暂不支持语音朗读，请用Safari或Chrome浏览器打开');
     return;
   }
-
-  // 停止任何正在播放的语音
   window.speechSynthesis.cancel();
-
-  const processedText = preprocessStoryText(story.text, currentLang);
-  storyUtterance = new SpeechSynthesisUtterance(processedText);
-
-  if (currentLang === 'zh') {
-    // 中文男声 - 爸爸讲故事：更慢、更温暖、更低沉
-    storyUtterance.lang = 'zh-CN';
-    storyUtterance.rate = 0.72;      // 更慢，更温柔
-    storyUtterance.pitch = 0.88;     // 更低沉，像爸爸的声音
-    storyUtterance.volume = 1.0;
-    if (preferredZhVoice) storyUtterance.voice = preferredZhVoice;
-  } else {
-    // 英文女声 - 妈妈讲故事：稍慢、温暖明亮
-    storyUtterance.lang = 'en-US';
-    storyUtterance.rate = 0.75;      // 稍慢，像讲故事
-    storyUtterance.pitch = 1.02;     // 自然女声，温暖
-    storyUtterance.volume = 1.0;
-    if (preferredEnVoice) storyUtterance.voice = preferredEnVoice;
-  }
-
-  storyUtterance.onend = function() {
-    isSpeaking = false;
-    updateVoiceButtonText();
-    document.getElementById('storyVoiceBtn').classList.remove('playing');
-  };
-
-  storyUtterance.onerror = function() {
-    isSpeaking = false;
-    updateVoiceButtonText();
-    document.getElementById('storyVoiceBtn').classList.remove('playing');
-  };
-
-  window.speechSynthesis.speak(storyUtterance);
+  const sentences = splitIntoSentences(story.text, currentLang);
   isSpeaking = true;
   updateVoiceButtonText();
   document.getElementById('storyVoiceBtn').classList.add('playing');
+  // iOS 修复：定期 resume 防止语音在 15 秒后中断
+  speechKeepAlive = setInterval(() => {
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.resume();
+    }
+  }, 5000);
+  speakSentence(sentences, 0);
 }
 
-// 高品质语音 - 使用更优化的参数和分段朗读，减少机械感
-function playHQVoice() {
-  const story = currentLang === 'zh' ? window._zhStory : window._enStory;
-  if (!story || !window.speechSynthesis) {
-    alert('您的设备暂不支持语音朗读哦');
+function speakSentence(sentences, idx) {
+  if (!isSpeaking) return;
+  if (idx >= sentences.length) {
+    isSpeaking = false;
+    updateVoiceButtonText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+    if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
     return;
   }
-
-  window.speechSynthesis.cancel();
-
-  // 将故事拆分成小段，每段之间加入停顿，模拟真人讲故事的节奏
-  const paragraphs = story.text.split('\n').filter(p => p.trim().length > 0);
-  let currentPara = 0;
-
-  function speakNextParagraph() {
-    if (currentPara >= paragraphs.length) {
-      isSpeaking = false;
-      updateHQButtonText();
-      document.getElementById('hqVoiceBtn').classList.remove('playing');
-      return;
-    }
-
-    const text = preprocessStoryText(paragraphs[currentPara], currentLang);
-    const utter = new SpeechSynthesisUtterance(text);
-
-    if (currentLang === 'zh') {
-      utter.lang = 'zh-CN';
-      utter.rate = 0.68;      // 更慢，更温暖
-      utter.pitch = 0.85;     // 更低沉，饱满像爸爸
-      utter.volume = 1.0;
-      if (preferredZhVoice) utter.voice = preferredZhVoice;
-    } else {
-      utter.lang = 'en-US';
-      utter.rate = 0.70;       // 更慢，像妈妈讲故事
-      utter.pitch = 1.00;      // 自然温暖女声
-      utter.volume = 1.0;
-      if (preferredEnVoice) utter.voice = preferredEnVoice;
-    }
-
-    utter.onend = function() {
-      currentPara++;
-      // 段落之间加入自然停顿（500ms），模拟呼吸和思考
-      setTimeout(speakNextParagraph, 600);
-    };
-
-    utter.onerror = function() {
-      isSpeaking = false;
-      updateHQButtonText();
-      document.getElementById('hqVoiceBtn').classList.remove('playing');
-    };
-
-    window.speechSynthesis.speak(utter);
+  const sentence = sentences[idx];
+  const params = analyzeSentence(sentence, currentLang);
+  const utter = new SpeechSynthesisUtterance(sentence);
+  if (currentLang === 'zh') {
+    // 爸爸讲故事：温暖低沉的男声
+    utter.lang = 'zh-CN';
+    utter.rate = params.rate;
+    utter.pitch = params.pitch;
+    utter.volume = 1.0;
+    if (preferredZhVoice) utter.voice = preferredZhVoice;
+  } else {
+    // 妈妈讲故事：温柔明亮的女声
+    utter.lang = 'en-US';
+    utter.rate = params.rate;
+    utter.pitch = params.pitch;
+    utter.volume = 1.0;
+    if (preferredEnVoice) utter.voice = preferredEnVoice;
   }
-
-  isSpeaking = true;
-  updateHQButtonText();
-  document.getElementById('hqVoiceBtn').classList.add('playing');
-  speakNextParagraph();
+  // 句末停顿：句号/问号/感叹号后停 600ms，逗号后停 350ms
+  let pauseAfter = 350;
+  if (/[。！？.!?…]/.test(sentence)) pauseAfter = 600;
+  if (idx === sentences.length - 1) pauseAfter = 0;
+  utter.onend = function() {
+    if (pauseAfter > 0) {
+      setTimeout(() => speakSentence(sentences, idx + 1), pauseAfter);
+    } else {
+      isSpeaking = false;
+      updateVoiceButtonText();
+      document.getElementById('storyVoiceBtn').classList.remove('playing');
+      if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
+    }
+  };
+  utter.onerror = function() {
+    isSpeaking = false;
+    updateVoiceButtonText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+    if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
+  };
+  window.speechSynthesis.speak(utter);
 }
 
 function stopStoryVoice() {
-  if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
   isSpeaking = false;
   updateVoiceButtonText();
-  updateHQButtonText();
+  if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
   const btn = document.getElementById('storyVoiceBtn');
   if (btn) btn.classList.remove('playing');
-  const hqBtn = document.getElementById('hqVoiceBtn');
-  if (hqBtn) hqBtn.classList.remove('playing');
 }
 
 // ============ MUSIC ============
@@ -1329,15 +1283,13 @@ function initSynth() {
     }
   });
 
-  // 链式连接：合成器 -> 滤波器 -> 混响 -> 输出
-  const filter = new Tone.Filter(800, "lowpass");
-  const reverb = new Tone.Reverb({ decay: 3, wet: 0.3 });
+  // 简单链式连接：合成器 -> 滤波器 -> 输出（去掉混响，兼容手机）
+  const filter = new Tone.Filter(1200, "lowpass");
   synth.connect(filter);
-  filter.connect(reverb);
-  reverb.toDestination();
+  filter.toDestination();
 
-  // 设置音量更高一些，确保手机能听见
-  synth.volume.value = -8;
+  // 设置音量
+  synth.volume.value = -6;
 
   // Lullaby-like melody patterns
   const patterns = [
