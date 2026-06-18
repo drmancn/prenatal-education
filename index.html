@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="大冬和媛媛的胎教时光，每天更新的胎教音乐与故事，陪伴宝宝健康成长">
+<title>大冬和媛媛的胎教时光 - 今日18周+6天</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(180deg, #FFF5F7 0%, #FFF8F0 100%);
+  min-height: 100vh;
+  color: #5A4A4A;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 32px;
+}
+
+/* Header - Disney Style */
+.header {
+  text-align: center;
+  padding: 28px 16px 20px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 16px rgba(255,182,193,0.15);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 60px;
+  background: radial-gradient(ellipse at center, rgba(255,209,220,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.header-decoration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.header-decoration .deco-star {
+  font-size: 20px;
+  color: #FFD93D;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.header-decoration .deco-bow {
+  width: 36px;
+  height: 36px;
+  position: relative;
+}
+
+.header-decoration .deco-bow::before,
+.header-decoration .deco-bow::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 20px;
+  background: #FFB5C5;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  top: 8px;
+}
+
+.header-decoration .deco-bow::before {
+  left: 2px;
+  transform: rotate(-20deg);
+}
+
+.header-decoration .deco-bow::after {
+  right: 2px;
+  transform: rotate(20deg);
+}
+
+.header-decoration .deco-bow .bow-knot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #FF9AAE;
+  border-radius: 50%;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+.header h1 {
+  font-size: 22px;
+  color: #E8919C;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+
+.header-sub {
+  font-size: 14px;
+  color: #B89098;
+  margin-top: 6px;
+}
+
+.week-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFD1DC 0%, #FFEBEF 100%);
+  color: #C45B6A;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+  border: 1px solid rgba(255,182,193,0.4);
+}
+
+/* Cards */
+.card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(255,220,230,0.5);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #D47885;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title .icon {
+  font-size: 20px;
+}
+
+/* Music Player */
+.music-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  height: 60px;
+  margin: 16px 0;
+}
+
+.bar {
+  width: 6px;
+  background: linear-gradient(180deg, #FFD1DC, #FFAAB5);
+  border-radius: 3px;
+  transition: height 0.3s ease;
+  height: 12px;
+}
+
+.bar.active {
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.bar:nth-child(1).active { animation-delay: 0s; }
+.bar:nth-child(2).active { animation-delay: 0.1s; }
+.bar:nth-child(3).active { animation-delay: 0.2s; }
+.bar:nth-child(4).active { animation-delay: 0.3s; }
+.bar:nth-child(5).active { animation-delay: 0.4s; }
+.bar:nth-child(6).active { animation-delay: 0.5s; }
+.bar:nth-child(7).active { animation-delay: 0.6s; }
+
+@keyframes bounce {
+  0%, 100% { height: 12px; }
+  50% { height: 48px; }
+}
+
+.play-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD1DC 0%, #FFB5C5 100%);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255,170,190,0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.play-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 8px rgba(255,170,190,0.25);
+}
+
+.play-btn svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+  margin-left: 4px;
+}
+
+.play-btn.playing svg {
+  margin-left: 0;
+}
+
+.music-info {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #C49098;
+  line-height: 1.5;
+}
+
+.music-tip {
+  background: #FFF8F0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #A08088;
+  margin-top: 14px;
+  line-height: 1.6;
+  border-left: 3px solid #FFD1DC;
+}
+
+/* Story Section */
+.story-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid #FFE0E6;
+  background: white;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #C49098;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #FFD1DC 0%, #FFB5C5 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(255,170,190,0.3);
+}
+
+.story-content {
+  background: #FFF8FA;
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 200px;
+}
+
+.story-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #D47885;
+  margin-bottom: 10px;
+}
+
+.story-text {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #6A5A5A;
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.story-tag {
+  display: inline-block;
+  background: #FFE0E6;
+  color: #C45B6A;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+/* Story Voice Button */
+.story-voice-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #FFE8D0 0%, #FFD6B0 100%);
+  border: none;
+  border-radius: 16px;
+  color: #B87050;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 180, 120, 0.2);
+  transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  font-family: inherit;
+}
+.story-voice-btn:active {
+  transform: scale(0.97);
+}
+.story-voice-btn .voice-icon {
+  font-size: 18px;
+}
+.story-voice-btn.playing {
+  background: linear-gradient(135deg, #FFD1DC 0%, #FFB5C5 100%);
+  color: #C45B6A;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(255, 170, 190, 0.3); }
+  50% { box-shadow: 0 2px 16px rgba(255, 170, 190, 0.5); }
+}
+
+/* Progress */
+.progress-section {
+  text-align: center;
+  padding: 16px;
+}
+
+.progress-ring {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 12px;
+  position: relative;
+}
+
+.progress-ring svg {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: #FFE0E6;
+  stroke-width: 6;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: url(#progressGradient);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: #D47885;
+  font-weight: 500;
+}
+
+.progress-label {
+  font-size: 13px;
+  color: #B89098;
+}
+
+/* Share */
+.share-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #FFD1DC 0%, #FFB5C5 100%);
+  border: none;
+  border-radius: 16px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255,170,190,0.3);
+  transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.share-btn:active {
+  transform: scale(0.97);
+}
+
+.share-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #C0A0A8;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* Daily update badge */
+.daily-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFF8F0;
+  border: 1px solid #FFE8D0;
+  color: #C49070;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* Tips card */
+.tips-list {
+  list-style: none;
+}
+
+.tips-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed #FFE0E6;
+  font-size: 13px;
+  color: #8A7078;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+
+.tips-list li:last-child {
+  border-bottom: none;
+}
+
+.tips-list .tip-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: -2px;
+  color: #D47885;
+  font-weight: 700;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: #C0A0A8;
+  line-height: 1.6;
+}
+
+.footer-heart {
+  color: #E8919C;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.2s; }
+.card:nth-child(5) { animation-delay: 0.25s; }
+
+/* Volume slider */
+.volume-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 0 8px;
+}
+
+.volume-wrap label {
+  font-size: 12px;
+  color: #C49098;
+  flex-shrink: 0;
+}
+
+.volume-wrap input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #FFE0E6;
+  outline: none;
+}
+
+.volume-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFB5C5;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+/* Voice hint */
+.voice-hint {
+  font-size: 11px;
+  color: #C0A0A8;
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.timer-display {
+  text-align: center;
+  font-size: 13px;
+  color: #C49098;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Start overlay */
+.start-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,245,247,0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.5s;
+}
+
+.start-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.start-overlay .baby-icon {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.start-overlay h2 {
+  font-size: 20px;
+  color: #D47885;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.start-overlay p {
+  font-size: 14px;
+  color: #B89098;
+  margin-bottom: 24px;
+  text-align: center;
+  padding: 0 32px;
+  line-height: 1.6;
+}
+
+.start-btn {
+  padding: 14px 48px;
+  background: linear-gradient(135deg, #FFD1DC 0%, #FFB5C5 100%);
+  border: none;
+  border-radius: 28px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,170,190,0.4);
+  transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.start-btn:active {
+  transform: scale(0.95);
+}
+</style>
+</head>
+<body>
+
+<!-- Start Overlay -->
+<div class="start-overlay" id="startOverlay">
+  <div class="baby-icon">✨</div>
+  <h2>大冬和媛媛的胎教小天地</h2>
+  <p>按下播放键，让音乐带着我们的爱<br>轻轻传递给肚子里的小宝贝</p>
+  <button class="start-btn" onclick="startApp()">开始体验</button>
+</div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFD1DC"/>
+      <stop offset="100%" style="stop-color:#FFB5C5"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-decoration">
+      <span class="deco-star">✨</span>
+      <div class="deco-bow"><div class="bow-knot"></div></div>
+      <span class="deco-star">✨</span>
+    </div>
+    <h1>大冬和媛媛的胎教时光</h1>
+    <div class="header-sub">每一天，爸爸和妈妈都在等你，小宝贝，你要健康快乐</div>
+    <div class="week-badge" id="weekBadge">今天是 18 周 + 6 天</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card">
+    <div class="card-title">孕期进度</div>
+    <div class="progress-section">
+      <div class="progress-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="progress-ring-fill" id="progressCircle" cx="60" cy="60" r="52"
+            stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+        </svg>
+        <div class="progress-text" id="progressText">👶 18周+6</div>
+      </div>
+      <div class="progress-label">已完成 46% · 距离预产期还有约 148 天</div>
+    </div>
+  </div>
+
+  <!-- Music Player -->
+  <div class="card">
+    <div class="card-title">今日胎教音乐</div>
+    <div class="daily-badge">每日自动更新</div>
+    <div class="music-visual" id="musicVisual">
+      <div class="bar" id="bar1"></div>
+      <div class="bar" id="bar2"></div>
+      <div class="bar" id="bar3"></div>
+      <div class="bar" id="bar4"></div>
+      <div class="bar" id="bar5"></div>
+      <div class="bar" id="bar6"></div>
+      <div class="bar" id="bar7"></div>
+    </div>
+    <button class="play-btn" id="playBtn" onclick="toggleMusic()">
+      <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <div class="music-info" id="musicName">《月光摇篮曲》- 柔和钢琴曲</div>
+    <div class="timer-display" id="timerDisplay">00:00 / 05:00</div>
+    <div class="volume-wrap">
+      <label>音量</label>
+      <input type="range" id="volumeSlider" min="-30" max="0" value="-8" oninput="changeVolume(this.value)">
+    </div>
+    <div class="music-tip">
+      宝宝，这是爸爸和妈妈为你准备的音乐。18周的你已经开始听到声音啦，音量要刚刚好，像爸爸妈妈轻声说话那样温柔。播放时，妈妈可以把手轻轻放在肚皮上，爸爸可以俯下身轻声说说话——宝宝最喜欢听爸爸妈妈的声音了。
+    </div>
+  </div>
+
+  <!-- Story -->
+  <div class="card">
+    <div class="card-title">今日胎教故事</div>
+    <div class="daily-badge">每日自动更新</div>
+    <div class="story-tabs">
+      <button class="tab-btn active" onclick="switchTab('zh')" id="tabZh">中文故事</button>
+      <button class="tab-btn" onclick="switchTab('en')" id="tabEn">英文故事</button>
+    </div>
+    <div class="story-content" id="storyContent">
+      <div class="story-tag" id="storyTag">经典童话</div>
+      <div class="story-title" id="storyTitle">加载中...</div>
+      <div class="story-text" id="storyText">...</div>
+      <button class="story-voice-btn" id="storyVoiceBtn" onclick="toggleStoryVoice()">
+        <span id="voiceBtnText">爸爸讲故事</span>
+      </button>
+      <div class="voice-hint" id="voiceHint">如果声音不够自然，可以点击下方「高品质语音」体验更温暖的朗读</div>
+      <button class="story-voice-btn" id="hqVoiceBtn" onclick="toggleHQVoice()" style="margin-top:8px; background: linear-gradient(135deg, #FFE0E8 0%, #FFC8D8 100%);">
+        <span id="hqBtnText">高品质语音（推荐）</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="card">
+    <div class="card-title">给爸爸和妈妈的18周小建议</div>
+    <ul class="tips-list">
+      <li><span class="tip-icon">·</span><span>宝宝这时候最喜欢低频的柔和声音，爸爸哼歌给宝宝听，比任何播放器都管用</span></li>
+      <li><span class="tip-icon">·</span><span>妈妈的声音通过骨传导最清晰，每天固定时间讲讲故事，宝宝会记住你的声音</span></li>
+      <li><span class="tip-icon">·</span><span>每天选一个固定时间，比如晚上九点半，让宝宝建立安全的生物钟</span></li>
+      <li><span class="tip-icon">·</span><span>爸爸可以把手轻轻放在妈妈肚皮上，一边放音乐一边感受胎动，那是宝宝在回应你</span></li>
+      <li><span class="tip-icon">·</span><span>妈妈的心情就是最好的胎教，爸爸记得多逗妈妈笑，宝宝也会跟着开心</span></li>
+    </ul>
+  </div>
+
+  <!-- Share -->
+  <div class="card" style="text-align:center">
+    <button class="share-btn" onclick="sharePage()">
+      把温暖分享给家人
+    </button>
+    <div class="share-hint">把这份温暖分享给爷爷奶奶外公外婆<br>让他们一起期待小宝贝的到来</div>
+  </div>
+
+  <div class="footer">
+    大冬和媛媛 <span class="footer-heart">♥</span> 永远爱你，小宝贝<br>
+    <span style="font-size:11px; opacity:0.7">内容仅供胎教陪伴，有任何疑问请咨询专业医生</span>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+const chineseStories = [
+  {
+    tag: "经典童话",
+    title: "小王子（节选）",
+    text: `狐狸说："对我来说，你只是一个小男孩，就像其他成千上万个小男孩一样没有什么两样。我不需要你。你也不需要我。对你来说，我也只是一只狐狸，和其他成千上万的狐狸没有什么不同。但是，如果你驯养了我，我们就会彼此需要。对我来说，你就是我的世界里独一无二的了；我对你来说，也是你的世界里的唯一了。"
+
+"我开始懂了，"小王子说，"有一朵花……我想，她已经驯养了我……"
+
+"这是可能的，"狐狸说，"世界上什么样的事都可能看到……"
+
+"啊！这不是在地球上的事。"小王子说。
+
+狐狸感到十分蹊跷。
+
+"在另一个星球上？"
+
+"是的。"
+
+"在那个星球上，有猎人吗？"
+
+"没有。"
+
+"这很有意思。那么，有鸡吗？"
+
+"也没有。"
+
+"没有十全十美的。"狐狸叹息地说道。`
+  },
+  {
+    tag: "伊索寓言",
+    title: "龟兔赛跑",
+    text: `有一天，兔子和乌龟比赛跑步。兔子嘲笑乌龟爬得慢，乌龟说："总有一天我会赢的。"兔子就轻蔑地说："那我们现在就开始比赛！"
+
+兔子飞快地跑着，乌龟拼命地爬。不一会儿，兔子与乌龟已经离得有很大一段距离了。兔子认为比赛太轻松了，它要先睡一会，并且自以为是地说："即使我就这样睡上一觉，乌龟也追不上我。"于是，兔子就在树旁躺下，不一会儿就睡着了。
+
+乌龟看到兔子睡着了，不敢停下来休息，不停地往前爬。它爬呀爬，终于离终点越来越近了。当兔子醒来时，发现乌龟已经到达终点了。兔子输了比赛，它非常后悔，但已经来不及了。
+
+这个故事告诉我们：不可轻易小视他人。虚心使人进步，骄傲使人落后。要踏踏实实地做事情，不要半途而废，才会取得成功。`
+  },
+  {
+    tag: "经典童话",
+    title: "丑小鸭",
+    text: `乡下有一所美丽的房子，周围有花园、小溪和草地。鸭妈妈正在孵蛋，她已经孵了很久了。终于，蛋壳开始裂开了，一只只小鸭子钻了出来。
+
+可是，有一个特别大的蛋，过了好久才裂开。从里面钻出来的小家伙又大又丑，灰扑扑的，一点也不像其他小鸭子。大家都叫他"丑小鸭"。
+
+丑小鸭走到哪里都受到欺负。鸭子啄他，小鸡打他，连喂鸡的女仆也踢他。丑小鸭很伤心，他飞过篱笆逃走了。
+
+他来到沼泽地，住在野鸭群中。春天来了，丑小鸭展开翅膀飞了起来。他飞进了一座花园，看到三只美丽的白天鹅在水面上游来游去。丑小鸭低下头，从水面上看到了自己的倒影——那不再是一只粗笨的、深灰色的、又丑又令人讨厌的鸭子，而是一只优雅美丽的白天鹅！
+
+原来，他根本不是丑小鸭，而是一只小天鹅。只要经过时间的洗礼，美丽终会绽放。`
+  },
+  {
+    tag: "睡前故事",
+    title: "月亮晚安",
+    text: `夜深了，小兔子躺在床上，透过窗户看着天上的月亮。月亮又大又圆，散发着柔和的光芒。
+
+"月亮婆婆，晚安。"小兔子轻声说。
+
+月亮婆婆听见了，温柔地眨了眨眼睛。月光洒在小兔子的床上，像一层薄薄的银纱。
+
+小兔子闭上眼睛，想起今天发生的开心事：早上吃到了甜甜的胡萝卜，中午和小伙伴在草地上玩耍，晚上妈妈讲了一个好听的故事。
+
+"星星们，晚安。"小兔子又说。
+
+天上的星星一闪一闪，好像在回应她。
+
+"枕头，晚安。被子，晚安。小床，晚安。"小兔子把身边的东西一一告别。
+
+"妈妈，晚安。"
+
+"晚安，我的小宝贝。"妈妈轻轻吻了吻小兔子的额头。
+
+月光下，小兔子甜甜地睡着了。梦里，她飞到了月亮上，和月亮婆婆一起，给世界上所有的小朋友送去甜甜的梦。`
+  },
+  {
+    tag: "中国传统",
+    title: "小蝌蚪找妈妈",
+    text: `池塘里有一群小蝌蚪，大大的脑袋，黑灰色的身子，甩着长长的尾巴，快活地游来游去。
+
+小蝌蚪们看见鲤鱼妈妈在教小鲤鱼捕食，就迎上去，问："鲤鱼阿姨，我们的妈妈在哪里？"鲤鱼妈妈说："你们的妈妈四条腿，宽嘴巴。到那边去找吧！"
+
+小蝌蚪们游啊游，看见一只乌龟摆动着四条腿在水里游。他们连忙追上去，叫着："妈妈，妈妈！"乌龟笑着说："我不是你们的妈妈。你们的妈妈头顶上有两只大眼睛，披着绿衣裳。你们到那边去找吧！"
+
+小蝌蚪们游过去，看见一只大白鹅"哗"地游过来。他们追上去，连声叫："妈妈！"大白鹅笑着说："小蝌蚪，你们认错了。我不是你们的妈妈，你们的妈妈穿着绿衣裳，唱起歌来'呱呱'的。你们到前面去找吧！"
+
+小蝌蚪们游到池塘边，看见荷叶上蹲着一只大青蛙，披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。小蝌蚪们游过去，叫着："妈妈，妈妈！"青蛙妈妈低头一看，笑着说："好孩子，你们已经长成青蛙了，快跳上来吧！"
+
+小蝌蚪们后腿一蹬，向前一跳，蹦到了荷叶上。他们和妈妈天天去捉害虫，成了庄稼的好朋友。`
+  },
+  {
+    tag: "经典童话",
+    title: "三只小猪",
+    text: `猪妈妈有三只可爱的小猪，他们渐渐长大了。猪妈妈说："你们长大了，应该学本领，各自去盖一间房子吧。"
+
+老大很懒惰，他用稻草很快地盖了一间草屋。老二觉得草屋不结实，但他也不想太辛苦，就用木头盖了一间木屋。老三最勤劳，他花了很长时间，用砖头一块一块地砌了一间坚固的砖屋。
+
+有一天，一只大野狼来了。他吹了一口气，老大的草屋就被吹倒了。老大吓得跑到老二家。大野狼追到老二的木屋前，用力一撞，木屋也倒了。两只小猪拼命跑到老三家。
+
+大野狼来到砖屋前，吹啊吹，房子纹丝不动。他又用爪子抓，用身体撞，砖屋还是一动不动。大野狼想从烟囱爬进去，老三赶紧烧起大火。大野狼从烟囱滑下来，正好掉进火堆里，被烧得哇哇大叫，夹着尾巴逃走了。
+
+老大和老二惭愧地说："我们以后也要像老三一样，勤劳做事，不能偷懒。"从此，三只小猪在砖屋里过着快乐而安全的生活。`
+  },
+  {
+    tag: "睡前故事",
+    title: "星星的礼物",
+    text: `在遥远的星空里，住着一颗善良的小星星。每天晚上，她都会从天上探出头，看着大地上的小朋友。
+
+"今天我要选一个小朋友，送他一份特别的礼物。"小星星说。她在天空中转呀转，看见了一个躺在床上的小宝宝。
+
+"这个小朋友还没有睡着呢，让我给他送一个甜甜的梦。"小星星从天上摘下一片银色的月光，把它捏成一颗小小的星星糖。
+
+她把星星糖轻轻抛向大地。星星糖穿过云层，穿过窗户，轻轻地落在宝宝的枕头边。
+
+宝宝闻到了星星糖甜甜的香味，那是月光和花香混合的味道。宝宝慢慢闭上眼睛，嘴角露出了微笑。
+
+在梦里，宝宝飞到了星星上，和小星星一起跳舞。他们跳过月亮，跳过银河，和所有的星星朋友们一起，唱起了温柔的歌。
+
+"晚安，小朋友。"小星星轻轻地说，"明天晚上，我还会来看你的。"
+
+天亮了，宝宝醒来，还记得那个美丽的梦。虽然枕头边没有星星糖，但宝宝知道，那是小星星送给他最珍贵的礼物——一个美好的夜晚。`
+  }
+];
+
+const englishStories = [
+  {
+    tag: "Classic Fairy Tale",
+    title: "The Little Prince (Excerpt)",
+    text: `"Come and play with me," proposed the little prince. "I am so unhappy."
+
+"I cannot play with you," the fox said. "I am not tamed."
+
+"Ah! Please excuse me," said the little prince. But, after some thought, he added: "What does that mean — 'tame'?"
+
+"You do not live here," said the fox. "What is it that you are looking for?"
+
+"I am looking for men," said the little prince. "What does that mean — 'tame'?"
+
+"It is an act too often neglected," said the fox. "It means to establish ties."
+
+"'To establish ties'?"
+
+"Just that," said the fox. "To me, you are still nothing more than a little boy who is just like a hundred thousand other little boys. And I have no need of you. And you, on your part, have no need of me. To you, I am nothing more than a fox like a hundred thousand other foxes. But if you tame me, then we shall need each other. To me, you will be unique in all the world. To you, I shall be unique in all the world..."
+
+"I am beginning to understand," said the little prince. "There is a flower... I think that she has tamed me..."`
+  },
+  {
+    tag: "Aesop's Fable",
+    title: "The Tortoise and the Hare",
+    text: `Once upon a time, there was a hare who was very proud of how fast he could run. He laughed at the slow tortoise and said, "You are so slow! You will never get anywhere."
+
+The tortoise smiled and replied, "I may be slow, but I can keep going. Let's have a race and see who wins."
+
+The hare agreed and laughed. "This will be easy!" he thought.
+
+The race began. The hare ran very fast and soon left the tortoise far behind. "I have plenty of time," the hare thought. "I can take a nap and still win." So he lay down under a tree and fell asleep.
+
+Meanwhile, the tortoise kept walking slowly but steadily. Step by step, he moved forward. He passed the sleeping hare and kept going toward the finish line.
+
+When the hare woke up, he ran as fast as he could to the finish line. But it was too late! The tortoise had already crossed the line and won the race.
+
+The hare learned an important lesson: slow and steady wins the race. Being too proud and lazy can make you lose, even when you are very talented.`
+  },
+  {
+    tag: "Classic Fairy Tale",
+    title: "The Ugly Duckling",
+    text: `In a cozy nest by the river, a mother duck sat on her eggs. One by one, the eggs hatched, and cute little ducklings popped out. But one egg was very large and took longer to hatch. When it finally cracked open, out came a big, gray bird who looked very different from the others.
+
+"What a strange-looking duckling!" everyone said. They called him the Ugly Duckling and treated him poorly. The other ducklings pecked him, the chickens chased him, and even the girl who fed the ducks kicked him.
+
+The Ugly Duckling was very sad. He ran away and wandered through the cold winter alone. He was hungry and frightened, but he never gave up hope.
+
+When spring came, the Ugly Duckling saw his reflection in the water. He was no longer gray and awkward — he had grown into a beautiful, graceful white swan! His long neck curved elegantly, and his feathers were as white as snow.
+
+The other swans welcomed him, and children threw bread and cake to him. The Ugly Duckling, now a handsome swan, spread his wings and felt truly happy. He had finally found where he belonged.
+
+Remember, dear baby: true beauty comes from within, and everyone grows at their own pace.`
+  },
+  {
+    tag: "Bedtime Story",
+    title: "Goodnight Moon",
+    text: `In the great green room, there was a little bunny lying in bed. The moon was shining brightly through the window, casting a soft silver light on everything.
+
+"Goodnight room," said the little bunny. "Goodnight moon. Goodnight cow jumping over the moon."
+
+The bunny looked around the room and said goodnight to everything he saw. "Goodnight light, and the red balloon. Goodnight bears, goodnight chairs. Goodnight kittens, and goodnight mittens. Goodnight clocks, and goodnight socks."
+
+He looked out the window at the stars twinkling in the night sky. "Goodnight stars," he whispered. "Goodnight air. Goodnight noises everywhere."
+
+The little bunny snuggled under his warm blanket. The moon smiled down at him, and the stars winked their gentle eyes. A soft breeze sang a lullaby through the trees.
+
+"Goodnight, little one," the moon said softly. "Sleep tight and dream sweet dreams. Tomorrow is a new day full of adventures."
+
+The little bunny closed his eyes, a peaceful smile on his face. He drifted into a dream where he was flying over the moon, playing with the stars, and dancing with the cow who jumped so high.
+
+And somewhere in the great green room, a clock ticked softly, keeping time with the gentle rhythm of a baby's heartbeat.`
+  },
+  {
+    tag: "Classic Fairy Tale",
+    title: "Goldilocks and the Three Bears",
+    text: `Once upon a time, there were three bears who lived in a little house in the forest. There was Papa Bear, Mama Bear, and Baby Bear.
+
+One morning, the bears made some porridge for breakfast. It was too hot to eat, so they went for a walk in the forest while it cooled down.
+
+A little girl named Goldilocks was walking in the forest. She saw the bears' house and knocked on the door. When no one answered, she walked inside.
+
+On the table, she saw three bowls of porridge. She tasted Papa Bear's porridge. "This porridge is too hot!" she said. She tasted Mama Bear's porridge. "This porridge is too cold!" Then she tasted Baby Bear's porridge. "This porridge is just right!" And she ate it all up.
+
+Goldilocks felt tired, so she went to the living room. She sat in Papa Bear's chair. "This chair is too big!" She sat in Mama Bear's chair. "This chair is too soft!" Then she sat in Baby Bear's chair. "This chair is just right!" But when she sat down, the chair broke!
+
+Goldilocks went upstairs to the bedroom. She lay down in Papa Bear's bed. "This bed is too hard!" She lay in Mama Bear's bed. "This bed is too soft!" Then she lay in Baby Bear's bed. "This bed is just right!" And she fell fast asleep.
+
+When the bears came home, they discovered someone had been eating their porridge, sitting in their chairs, and sleeping in their beds! Baby Bear cried, "Someone's been eating my porridge, and it's all gone! Someone's been sitting in my chair, and it's broken! Someone's been sleeping in my bed, and here she is!"
+
+Goldilocks woke up, saw the three bears, and ran out of the house as fast as she could. She never went back to the forest again, and the three bears lived happily ever after.`
+  },
+  {
+    tag: "Bedtime Story",
+    title: "The Star's Gift",
+    text: `High up in the night sky, there lived a kind little star. Every evening, she would peek out from behind the clouds and look down at all the children on Earth.
+
+"Tonight, I will choose one special child and send them a gift," the little star said. She twinkled and danced across the sky, looking for a child who needed sweet dreams.
+
+She found a little baby lying in a cozy crib, looking up at the window with curious eyes. "This child is still awake," the star said gently. "Let me send a dream of flying and dancing."
+
+The little star reached up and gathered some silver moonlight in her hands. She shaped it into a tiny star-shaped dream and blew it softly toward Earth.
+
+The dream floated down through the clouds, drifted past the treetops, slipped through the open window, and landed gently on the baby's pillow. It smelled like flowers and honey and warm hugs.
+
+The baby breathed in the sweet scent, yawned a big yawn, and slowly closed her eyes. A peaceful smile spread across her face.
+
+In the dream, the baby flew up to the sky and held hands with the little star. Together, they danced around the moon, slid down the Milky Way, and played hide-and-seek with all the other stars.
+
+"Goodnight, little one," the star whispered. "I will watch over you until morning comes."
+
+And as the baby slept, the little star stayed right above her window, shining extra bright, making sure the night was full of love and gentle dreams.`
+  },
+  {
+    tag: "Classic Fairy Tale",
+    title: "The Three Little Pigs",
+    text: `Once upon a time, there were three little pigs who grew up and were ready to leave home. Their mother said, "Go out into the world and build your own houses. But be careful of the big bad wolf!"
+
+The first little pig was lazy. He built his house quickly out of straw. "Now I can play!" he said.
+
+The second little pig wanted to play too, but he thought straw was too weak. He built his house out of wood. It was stronger than straw, but he built it very fast so he could still have time to play.
+
+The third little pig was hardworking and wise. He knew the wolf was dangerous, so he built his house out of strong bricks. It took him a long time, but he made sure every brick was placed perfectly.
+
+One day, the big bad wolf came to the first pig's straw house. "Little pig, little pig, let me come in!" he called. "Not by the hair on my chinny chin chin!" said the pig. "Then I'll huff and I'll puff and I'll blow your house down!" And the wolf blew, and the straw house fell down!
+
+The first pig ran to his brother's wooden house. But the wolf came and blew that house down too! Both pigs ran to the third pig's brick house.
+
+The wolf huffed and puffed, but the brick house was too strong. He tried to climb down the chimney, but the third little pig had built a fire. The wolf fell into the hot fire and ran away, never to return.
+
+The three little pigs learned that hard work and patience always pay off. They lived happily ever after in the strong brick house.`
+  }
+];
+
+const musicNames = [
+  "月光摇篮曲 - 柔和钢琴",
+  "星星小夜曲 - 梦幻旋律",
+  "云朵漂浮曲 - 轻音乐",
+  "花园漫步曲 - 古典钢琴",
+  "雨滴轻舞曲 - 宁静旋律",
+  "晨光唤醒曲 - 温柔钢琴",
+  "银河漫游曲 - 梦幻音乐"
+];
+
+// ============ STATE ============
+let isPlaying = false;
+let synth = null;
+let loop = null;
+let timerInterval = null;
+let secondsPlayed = 0;
+let currentLang = 'zh';
+let currentDayIndex = 0;
+
+// ============ UTILS ============
+function getDayIndex() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
+}
+
+function pad(n) {
+  return n < 10 ? '0' + n : n;
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${pad(m)}:${pad(sec)}`;
+}
+
+// ============ PROGRESS ============
+function updateProgress() {
+  const lastMenstrualDate = new Date('2026-02-06');
+  const today = new Date();
+
+  const diffTime = today - lastMenstrualDate;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  const totalWeeks = 40;
+  const weeks = Math.floor(diffDays / 7);
+  const days = diffDays % 7;
+
+  const pct = Math.min((weeks + days/7) / totalWeeks, 1);
+  const circumference = 2 * Math.PI * 52;
+  const offset = circumference * (1 - pct);
+  document.getElementById('progressCircle').style.strokeDashoffset = offset;
+
+  document.getElementById('weekBadge').textContent = `今天是 ${weeks} 周 + ${days} 天`;
+  document.getElementById('progressText').textContent = `👶 ${weeks}周+${days}`;
+
+  const dueDate = new Date(lastMenstrualDate);
+  dueDate.setDate(dueDate.getDate() + 280);
+  const remainingDays = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
+  const percentComplete = Math.round(pct * 100);
+
+  document.getElementById('progressLabel').textContent = `已完成 ${percentComplete}% · 距离预产期还有约 ${remainingDays} 天`;
+}
+
+// ============ STORIES ============
+function loadStories() {
+  try {
+    currentDayIndex = getDayIndex();
+    const zhIndex = currentDayIndex % chineseStories.length;
+    const enIndex = currentDayIndex % englishStories.length;
+    const musicIndex = currentDayIndex % musicNames.length;
+
+    // Store for tab switching
+    window._zhStory = chineseStories[zhIndex];
+    window._enStory = englishStories[enIndex];
+    window._musicName = musicNames[musicIndex];
+
+    const musicNameEl = document.getElementById('musicName');
+    if (musicNameEl && window._musicName) {
+      const parts = window._musicName.split(' - ');
+      musicNameEl.textContent = '《' + (parts[0] || '') + '》- ' + (parts[1] || '');
+    }
+    renderStory(currentLang);
+  } catch (e) {
+    console.error('故事加载失败:', e);
+    // 使用默认故事作为fallback
+    window._zhStory = chineseStories[0];
+    window._enStory = englishStories[0];
+    window._musicName = musicNames[0];
+    renderStory(currentLang);
+  }
+}
+
+function renderStory(lang) {
+  const story = lang === 'zh' ? window._zhStory : window._enStory;
+  document.getElementById('storyTag').textContent = story.tag;
+  document.getElementById('storyTitle').textContent = story.title;
+  document.getElementById('storyText').textContent = story.text;
+  // 更新语音按钮文字
+  updateVoiceButtonText();
+  // 切换故事时停止语音
+  if (isSpeaking) stopStoryVoice();
+}
+
+function switchTab(lang) {
+  currentLang = lang;
+  document.getElementById('tabZh').classList.toggle('active', lang === 'zh');
+  document.getElementById('tabEn').classList.toggle('active', lang === 'en');
+  renderStory(lang);
+}
+
+// ============ STORY VOICE ============
+let isSpeaking = false;
+let storyUtterance = null;
+let voiceList = [];
+let preferredZhVoice = null;
+let preferredEnVoice = null;
+
+function initVoices() {
+  if (!window.speechSynthesis) return;
+  const loadVoices = function() {
+    voiceList = window.speechSynthesis.getVoices();
+    // 优先选择更自然的语音
+    // 中文：优先选择 Ting-Ting, Yaoyao (Apple), 或 Microsoft 的语音
+    const zhCandidates = voiceList.filter(v => v.lang && v.lang.includes('zh'));
+    preferredZhVoice = zhCandidates.find(v => /ting-?ting|yaoyao|meijia|li-?na/i.test(v.name))
+      || zhCandidates.find(v => /microsoft/i.test(v.name))
+      || zhCandidates.find(v => /google/i.test(v.name))
+      || zhCandidates[0];
+
+    // 英文：优先选择 Samantha, Victoria, Karen, Moira, Fred 等苹果自然语音
+    const enCandidates = voiceList.filter(v => v.lang && v.lang.includes('en'));
+    preferredEnVoice = enCandidates.find(v => /samantha|victoria|karen|moira|tessa|ava/i.test(v.name))
+      || enCandidates.find(v => /microsoft/i.test(v.name))
+      || enCandidates.find(v => /google/i.test(v.name))
+      || enCandidates.find(v => /en-?us/i.test(v.lang))
+      || enCandidates[0];
+  };
+  loadVoices();
+  if (voiceList.length === 0) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+}
+
+function updateVoiceButtonText() {
+  const textEl = document.getElementById('voiceBtnText');
+  if (!textEl) return;
+  if (isSpeaking) {
+    textEl.textContent = currentLang === 'zh' ? '爸爸正在讲故事...' : 'Mommy is reading...';
+  } else {
+    textEl.textContent = currentLang === 'zh' ? '爸爸讲故事' : 'Mommy Tells a Story';
+  }
+}
+
+function updateHQButtonText() {
+  const textEl = document.getElementById('hqBtnText');
+  if (!textEl) return;
+  if (isSpeaking) {
+    textEl.textContent = currentLang === 'zh' ? '爸爸在温柔地讲述...' : 'Mommy is gently reading...';
+  } else {
+    textEl.textContent = currentLang === 'zh' ? '高品质语音（推荐）' : 'High Quality Voice (Recommended)';
+  }
+}
+
+function toggleStoryVoice() {
+  if (isSpeaking) {
+    stopStoryVoice();
+  } else {
+    playStoryVoice();
+  }
+}
+
+function toggleHQVoice() {
+  if (isSpeaking) {
+    stopStoryVoice();
+  } else {
+    playHQVoice();
+  }
+}
+
+// 对文本进行预处理，加入自然的停顿和节奏，更像讲故事
+function preprocessStoryText(text, lang) {
+  if (lang === 'zh') {
+    // 中文：在段落之间增加明显停顿，让语气更柔和
+    return text
+      .replace(/\n\n+/g, '。\n')           // 段落之间加句号停顿
+      .replace(/([。！？；])/g, '$1，')      // 句末加逗号增加停顿
+      .replace(/([，。])/g, '$1，')         // 增加额外的轻柔停顿
+      .replace(/，，+/g, '，')              // 清理多余逗号
+      .replace(/"([^"]+)"/g, '「$1」');   // 引号转中文（更自然）
+  } else {
+    // 英文：增加停顿和节奏感
+    return text
+      .replace(/\n\n+/g, '.\n')
+      .replace(/([.!?])/g, '$1, ')
+      .replace(/([,])/g, ', ')
+      .replace(/\s+/g, ' ');
+  }
+}
+
+function playStoryVoice() {
+  const story = currentLang === 'zh' ? window._zhStory : window._enStory;
+  if (!story || !window.speechSynthesis) {
+    alert('您的设备暂不支持语音朗读哦');
+    return;
+  }
+
+  // 停止任何正在播放的语音
+  window.speechSynthesis.cancel();
+
+  const processedText = preprocessStoryText(story.text, currentLang);
+  storyUtterance = new SpeechSynthesisUtterance(processedText);
+
+  if (currentLang === 'zh') {
+    // 中文男声 - 爸爸讲故事：更慢、更温暖、更低沉
+    storyUtterance.lang = 'zh-CN';
+    storyUtterance.rate = 0.72;      // 更慢，更温柔
+    storyUtterance.pitch = 0.88;     // 更低沉，像爸爸的声音
+    storyUtterance.volume = 1.0;
+    if (preferredZhVoice) storyUtterance.voice = preferredZhVoice;
+  } else {
+    // 英文女声 - 妈妈讲故事：稍慢、温暖明亮
+    storyUtterance.lang = 'en-US';
+    storyUtterance.rate = 0.75;      // 稍慢，像讲故事
+    storyUtterance.pitch = 1.02;     // 自然女声，温暖
+    storyUtterance.volume = 1.0;
+    if (preferredEnVoice) storyUtterance.voice = preferredEnVoice;
+  }
+
+  storyUtterance.onend = function() {
+    isSpeaking = false;
+    updateVoiceButtonText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+  };
+
+  storyUtterance.onerror = function() {
+    isSpeaking = false;
+    updateVoiceButtonText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+  };
+
+  window.speechSynthesis.speak(storyUtterance);
+  isSpeaking = true;
+  updateVoiceButtonText();
+  document.getElementById('storyVoiceBtn').classList.add('playing');
+}
+
+// 高品质语音 - 使用更优化的参数和分段朗读，减少机械感
+function playHQVoice() {
+  const story = currentLang === 'zh' ? window._zhStory : window._enStory;
+  if (!story || !window.speechSynthesis) {
+    alert('您的设备暂不支持语音朗读哦');
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  // 将故事拆分成小段，每段之间加入停顿，模拟真人讲故事的节奏
+  const paragraphs = story.text.split('\n').filter(p => p.trim().length > 0);
+  let currentPara = 0;
+
+  function speakNextParagraph() {
+    if (currentPara >= paragraphs.length) {
+      isSpeaking = false;
+      updateHQButtonText();
+      document.getElementById('hqVoiceBtn').classList.remove('playing');
+      return;
+    }
+
+    const text = preprocessStoryText(paragraphs[currentPara], currentLang);
+    const utter = new SpeechSynthesisUtterance(text);
+
+    if (currentLang === 'zh') {
+      utter.lang = 'zh-CN';
+      utter.rate = 0.68;      // 更慢，更温暖
+      utter.pitch = 0.85;     // 更低沉，饱满像爸爸
+      utter.volume = 1.0;
+      if (preferredZhVoice) utter.voice = preferredZhVoice;
+    } else {
+      utter.lang = 'en-US';
+      utter.rate = 0.70;       // 更慢，像妈妈讲故事
+      utter.pitch = 1.00;      // 自然温暖女声
+      utter.volume = 1.0;
+      if (preferredEnVoice) utter.voice = preferredEnVoice;
+    }
+
+    utter.onend = function() {
+      currentPara++;
+      // 段落之间加入自然停顿（500ms），模拟呼吸和思考
+      setTimeout(speakNextParagraph, 600);
+    };
+
+    utter.onerror = function() {
+      isSpeaking = false;
+      updateHQButtonText();
+      document.getElementById('hqVoiceBtn').classList.remove('playing');
+    };
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  isSpeaking = true;
+  updateHQButtonText();
+  document.getElementById('hqVoiceBtn').classList.add('playing');
+  speakNextParagraph();
+}
+
+function stopStoryVoice() {
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+  isSpeaking = false;
+  updateVoiceButtonText();
+  updateHQButtonText();
+  const btn = document.getElementById('storyVoiceBtn');
+  if (btn) btn.classList.remove('playing');
+  const hqBtn = document.getElementById('hqVoiceBtn');
+  if (hqBtn) hqBtn.classList.remove('playing');
+}
+
+// ============ MUSIC ============
+function initSynth() {
+  if (synth) return;
+
+  // 确保主输出音量正常
+  Tone.Destination.volume.value = 0;
+
+  // PolySynth for gentle piano-like chords
+  synth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: "triangle" },
+    envelope: {
+      attack: 0.08,
+      decay: 0.4,
+      sustain: 0.4,
+      release: 1.5
+    }
+  });
+
+  // 链式连接：合成器 -> 滤波器 -> 混响 -> 输出
+  const filter = new Tone.Filter(800, "lowpass");
+  const reverb = new Tone.Reverb({ decay: 3, wet: 0.3 });
+  synth.connect(filter);
+  filter.connect(reverb);
+  reverb.toDestination();
+
+  // 设置音量更高一些，确保手机能听见
+  synth.volume.value = -8;
+
+  // Lullaby-like melody patterns
+  const patterns = [
+    // Pattern 1: Moonlight lullaby
+    [
+      { time: "0:0", note: ["C4", "E4", "G4"], dur: "2n" },
+      { time: "0:2", note: ["G3", "B3", "D4"], dur: "2n" },
+      { time: "1:0", note: ["A3", "C4", "E4"], dur: "2n" },
+      { time: "1:2", note: ["F3", "A3", "C4"], dur: "2n" },
+      { time: "2:0", note: ["C4", "E4", "G4"], dur: "2n" },
+      { time: "2:2", note: ["G3", "B3", "D4"], dur: "2n" },
+      { time: "3:0", note: ["A3", "C4", "E4"], dur: "2n" },
+      { time: "3:2", note: ["F3", "A3", "C4"], dur: "1n" },
+    ],
+    // Pattern 2: Star melody
+    [
+      { time: "0:0", note: ["G3", "B3", "D4"], dur: "2n" },
+      { time: "0:2", note: ["C4", "E4", "G4"], dur: "2n" },
+      { time: "1:0", note: ["A3", "C4", "E4"], dur: "2n" },
+      { time: "1:2", note: ["G3", "B3", "D4"], dur: "2n" },
+      { time: "2:0", note: ["F3", "A3", "C4"], dur: "2n" },
+      { time: "2:2", note: ["C4", "E4", "G4"], dur: "2n" },
+      { time: "3:0", note: ["G3", "B3", "D4"], dur: "2n" },
+      { time: "3:2", note: ["C4", "E4", "G4"], dur: "1n" },
+    ]
+  ];
+
+  const selectedPattern = patterns[currentDayIndex % patterns.length];
+
+  loop = new Tone.Part((time, value) => {
+    synth.triggerAttackRelease(value.note, value.dur, time);
+  }, selectedPattern);
+
+  loop.loop = true;
+  loop.loopEnd = "4m";
+}
+
+function toggleMusic() {
+  if (!isPlaying) {
+    startMusic();
+  } else {
+    stopMusic();
+  }
+}
+
+async function startMusic() {
+  if (typeof Tone === 'undefined') {
+    alert('音乐播放器暂时不可用，请检查网络连接');
+    return;
+  }
+  // 确保音频上下文已启动（移动设备需要用户手势）
+  if (Tone.context && Tone.context.state !== 'running') {
+    await Tone.start();
+    await Tone.context.resume();
+  }
+  initSynth();
+
+  Tone.Transport.position = 0;
+  Tone.Transport.start();
+  loop.start(0);
+
+  isPlaying = true;
+  updatePlayButton();
+  startTimer();
+  animateBars(true);
+}
+
+function stopMusic() {
+  if (loop) loop.stop();
+  if (typeof Tone !== 'undefined' && Tone.Transport) Tone.Transport.stop();
+
+  isPlaying = false;
+  updatePlayButton();
+  stopTimer();
+  animateBars(false);
+}
+
+function updatePlayButton() {
+  document.getElementById('playIcon').style.display = isPlaying ? 'none' : 'block';
+  document.getElementById('pauseIcon').style.display = isPlaying ? 'block' : 'none';
+  document.getElementById('playBtn').classList.toggle('playing', isPlaying);
+}
+
+function changeVolume(val) {
+  if (synth) synth.volume.value = parseFloat(val);
+}
+
+function animateBars(active) {
+  for (let i = 1; i <= 7; i++) {
+    document.getElementById('bar' + i).classList.toggle('active', active);
+  }
+}
+
+// ============ TIMER ============
+function startTimer() {
+  secondsPlayed = 0;
+  document.getElementById('timerDisplay').textContent = '00:00 / 05:00';
+  timerInterval = setInterval(() => {
+    secondsPlayed++;
+    document.getElementById('timerDisplay').textContent = formatTime(secondsPlayed) + ' / 05:00';
+    if (secondsPlayed >= 300) { // 5 minutes
+      stopMusic();
+      alert('🎵 今天的音乐时间结束啦～爸爸和妈妈可以轻轻摸摸肚皮，跟宝宝说声晚安。');
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ============ START ============
+function startApp() {
+  document.getElementById('startOverlay').classList.add('hidden');
+  try {
+    if (typeof Tone !== 'undefined') {
+      Tone.start().catch(() => {}); // Pre-init audio context (best effort)
+    }
+  } catch (e) {
+    // ignore
+  }
+  // 确保故事已加载
+  loadStories();
+}
+
+// ============ SHARE ============
+function sharePage() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: '大冬和媛媛的胎教时光 - 18周+6天',
+      text: '大冬和媛媛每天为宝宝准备胎教音乐和故事，一起来感受这份温暖吧！',
+      url: url
+    });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('链接已复制，快发给家人们吧！');
+    });
+  } else {
+    const input = document.createElement('input');
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    alert('链接已复制，快发给家人们吧！');
+  }
+}
+
+// ============ INIT ============
+window.onload = function() {
+  updateProgress();
+  loadStories();
+  initVoices();
+};
+</script>
+</body>
+</html>
