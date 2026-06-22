@@ -635,6 +635,7 @@ body {
 .start-overlay.hidden {
   opacity: 0;
   pointer-events: none;
+  display: none;
 }
 
 .start-overlay .baby-icon {
@@ -690,7 +691,7 @@ body {
   <div class="baby-icon">✨</div>
   <h2>大冬和媛媛的胎教小天地</h2>
   <p>按下播放键，让音乐带着我们的爱<br>轻轻传递给肚子里的小宝贝</p>
-  <button class="start-btn" id="startBtn">开始体验</button>
+  <button class="start-btn" id="startBtn" onclick="startApp()">开始体验</button>
 </div>
 
 <svg width="0" height="0" style="position:absolute">
@@ -1338,7 +1339,6 @@ function updateBabySize(weeks) {
 }
 
 // ============ STORIES ============
-let currentDayIndex = 0;
 function loadStories() {
   try {
     currentDayIndex = getDayIndex();
@@ -1457,37 +1457,27 @@ function updateAudioBtnText() {
 // ============ INIT ============
 // ============ INIT ============
 
-// 点击"开始体验"：隐藏遮罩，显示主内容，执行初始化
+// 点击"开始体验"：隐藏遮罩，显示主内容
 function startApp() {
-  // 隐藏遮罩层（带动画）
-  document.getElementById('startOverlay').classList.add('hidden');
-  // 显示主内容
-  document.querySelector('.container').classList.add('visible');
-  // 执行初始化
+  var overlay = document.getElementById('startOverlay');
+  var container = document.querySelector('.container');
+  if (overlay) overlay.classList.add('hidden');
+  if (container) container.classList.add('visible');
   updateProgress();
   loadStories();
   setupAudioEvents();
 }
 
-// 页面加载时预初始化（遮罩层仍显示，用户在点击前数据已准备好）
-window.onload = function() {
+// 页面加载时预初始化
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    updateProgress();
+    loadStories();
+  });
+} else {
   updateProgress();
   loadStories();
-
-  // 绑定"开始体验"按钮（使用 addEventListener，更稳健）
-  var btn = document.getElementById('startBtn');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      var overlay = document.getElementById('startOverlay');
-      if (overlay) overlay.classList.add('hidden');
-      var container = document.querySelector('.container');
-      if (container) container.classList.add('visible');
-      if (typeof updateProgress === 'function') updateProgress();
-      if (typeof loadStories === 'function') loadStories();
-      if (typeof setupAudioEvents === 'function') setupAudioEvents();
-    });
-  }
-};
+}
 </script>
 </body>
 </html>
