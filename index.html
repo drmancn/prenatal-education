@@ -1581,15 +1581,28 @@ function updateAudioBtnText() {
 // 点击"开始体验"：隐藏遮罩，显示主内容
 // 使用最简单可靠的方式：直接操作 style，不依赖 CSS 类
 function startApp() {
+  // 1. 隐藏遮罩层
   var overlay = document.getElementById('startOverlay');
+  if (overlay) overlay.style.display = 'none';
+  
+  // 2. 显示主容器
   var container = document.querySelector('.container');
-  if (overlay) { overlay.style.display = 'none'; }
-  if (container) { container.style.display = 'block'; }
-  // 初始化数据（放在 try 外，如果出错能在控制台看到）
-  if (typeof updateProgress === 'function') updateProgress();
-  if (typeof loadStories === 'function') loadStories();
-  if (typeof setupAudioEvents === 'function') setupAudioEvents();
+  if (container) container.style.display = 'block';
+  
+  // 3. 立即初始化所有数据（不用 setTimeout）
+  try {
+    if (typeof updateProgress === 'function') updateProgress();
+  } catch(e) { console.error('updateProgress error:', e); }
+  
+  try {
+    if (typeof loadStories === 'function') loadStories();
+  } catch(e) { console.error('loadStories error:', e); }
+  
+  try {
+    if (typeof setupAudioEvents === 'function') setupAudioEvents();
+  } catch(e) { console.error('setupAudioEvents error:', e); }
 }
+
 // 不再在全局作用域执行任何代码，只定义函数
 // 按钮通过 HTML 的 onclick="startApp()" 绑定
 </script>
