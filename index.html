@@ -1119,6 +1119,103 @@ let secondsPlayed = 0;
 let currentLang = 'zh';
 let currentDayIndex = 0;
 
+
+// ============ MUSIC (Tone.js) ============
+// 初始化 Tone.js（需要在用户交互后调用）
+async function initTone() {
+  if (Tone.context.state !== 'running') {
+    await Tone.start();
+  }
+  if (!synth) {
+    synth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'sine' },
+      envelope: { attack: 2, decay: 1, sustain: 0.8, release: 3 }
+    }).toDestination();
+  }
+}
+
+// 播放舒缓的胎教音乐
+function playMusic() {
+  if (loop) loop.dispose();
+  
+  // 简单的摇篮曲旋律（C大调，舒缓）
+  const melody = [
+    'C4', null, 'E4', null, 'G4', null, 'E4', null,
+    'F4', null, 'A4', null, 'G4', null, 'F4', null,
+    'E4', null, 'D4', null, 'C4', null, null, null,
+    'G3', null, 'B3', null, 'D4', null, 'C4', null
+  ];
+  
+  let i = 0;
+  loop = new Tone.Loop(time => {
+    if (i >= melody.length) i = 0;
+    const note = melody[i];
+    if (note && synth) {
+      synth.triggerAttackRelease(note, '2n', time);
+    }
+    i++;
+  }, '4n').start(0);
+  
+  Tone.Transport.start();
+  isPlaying = true;
+  updatePlayBtn();
+  startTimer();
+}
+
+// 暂停音乐
+function pauseMusic() {
+  Tone.Transport.pause();
+  isPlaying = false;
+  updatePlayBtn();
+  stopTimer();
+}
+
+// 切换播放状态
+async function toggleMusic() {
+  try {
+    await initTone();
+    if (isPlaying) {
+      pauseMusic();
+    } else {
+      playMusic();
+    }
+  } catch(e) {
+    console.error('音乐播放失败:', e);
+    alert('音乐播放失败，请刷新页面重试');
+  }
+}
+
+// 更新播放按钮
+function updatePlayBtn() {
+  const btn = document.getElementById('playBtn');
+  if (!btn) return;
+  btn.textContent = isPlaying ? '⏸ 暂停音乐' : '🎵 播放音乐';
+  btn.classList.toggle('playing', isPlaying);
+}
+
+// 计时器
+function startTimer() {
+  secondsPlayed = 0;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    secondsPlayed++;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer');
+  if (el) el.textContent = formatTime(secondsPlayed);
+}
+
+
 // ============ UTILS ============
 function getDayIndex() {
   const now = new Date();
