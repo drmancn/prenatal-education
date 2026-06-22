@@ -1455,29 +1455,20 @@ function updateAudioBtnText() {
 }
 
 // ============ INIT ============
-// ============ INIT ============
-
 // 点击"开始体验"：隐藏遮罩，显示主内容
+// 使用最简单可靠的方式：直接操作 style，不依赖 CSS 类
 function startApp() {
   var overlay = document.getElementById('startOverlay');
   var container = document.querySelector('.container');
-  if (overlay) overlay.classList.add('hidden');
-  if (container) container.classList.add('visible');
-  updateProgress();
-  loadStories();
-  setupAudioEvents();
+  if (overlay) { overlay.style.display = 'none'; }
+  if (container) { container.style.display = 'block'; }
+  // 初始化数据（放在 try 外，如果出错能在控制台看到）
+  if (typeof updateProgress === 'function') updateProgress();
+  if (typeof loadStories === 'function') loadStories();
+  if (typeof setupAudioEvents === 'function') setupAudioEvents();
 }
-
-// 页面加载时预初始化
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() {
-    updateProgress();
-    loadStories();
-  });
-} else {
-  updateProgress();
-  loadStories();
-}
+// 不再在全局作用域执行任何代码，只定义函数
+// 按钮通过 HTML 的 onclick="startApp()" 绑定
 </script>
 </body>
 </html>
