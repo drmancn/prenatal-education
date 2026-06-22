@@ -21,6 +21,10 @@ body {
   margin: 0 auto;
   padding: 16px;
   padding-bottom: 32px;
+  display: none;
+}
+.container.visible {
+  display: block;
 }
 
 /* Header - Disney Style */
@@ -1451,10 +1455,23 @@ function updateAudioBtnText() {
 }
 
 // ============ INIT ============\n// ============ INIT ============
-window.onload = function() {
+
+// 点击"开始体验"：隐藏遮罩，显示主内容，执行初始化
+function startApp() {
+  // 隐藏遮罩层（带动画）
+  document.getElementById('startOverlay').classList.add('hidden');
+  // 显示主内容
+  document.querySelector('.container').classList.add('visible');
+  // 执行初始化
   updateProgress();
   loadStories();
   setupAudioEvents();
+}
+
+// 页面加载时预初始化（遮罩层仍显示，用户在点击前数据已准备好）
+window.onload = function() {
+  updateProgress();
+  loadStories();
 };
 </script>
 </body>
