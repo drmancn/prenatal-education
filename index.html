@@ -841,6 +841,26 @@ body {
 </div>
 
 <script>
+// ============ 调试和错误处理 ============
+console.log('🎵 胎教时光 JS 开始加载...');
+
+// 全局错误处理
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('❌ 全局错误:', msg, 'at line', lineNo, 'column', columnNo);
+  alert('页面出现错误：' + msg + '\n请截图并联系开发者');
+  return false;
+};
+
+// 检查关键函数是否定义
+window.addEventListener('DOMContentLoaded', function() {
+  console.log('✅ DOM 已加载');
+  console.log('  - startApp():', typeof startApp === 'function' ? '✅' : '❌');
+  console.log('  - toggleMusic():', typeof toggleMusic === 'function' ? '✅' : '❌');
+  console.log('  - toggleStoryAudio():', typeof toggleStoryAudio === 'function' ? '✅' : '❌');
+  console.log('  - loadStories():', typeof loadStories === 'function' ? '✅' : '❌');
+});
+
+
 // ============ DATA ============
 const chineseStories = [
   {
