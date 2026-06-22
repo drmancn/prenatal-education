@@ -802,8 +802,9 @@ body {
       <div class="story-tag" id="storyTag">经典童话</div>
       <div class="story-title" id="storyTitle">加载中...</div>
       <div class="story-text" id="storyText">...</div>
-      <button class="story-voice-btn" id="storyVoiceBtn" onclick="toggleStoryVoice()">
-        <span id="voiceBtnText">爸爸讲故事</span>
+      <audio id="storyAudio" preload="none" style="display:none"></audio>
+      <button class="story-voice-btn" id="storyVoiceBtn" onclick="toggleStoryAudio()">
+        <span id="voiceBtnText">播放故事 🔊</span>
       </button>
     </div>
   </div>
@@ -1333,6 +1334,7 @@ function updateBabySize(weeks) {
 }
 
 // ============ STORIES ============
+let currentDayIndex = 0;
 function loadStories() {
   try {
     currentDayIndex = getDayIndex();
@@ -1343,6 +1345,8 @@ function loadStories() {
     // Store for tab switching
     window._zhStory = chineseStories[zhIndex];
     window._enStory = englishStories[enIndex];
+    window._zhIndex = zhIndex;   // 用于音频文件映射
+    window._enIndex = enIndex;   // 用于音频文件映射
     window._musicName = musicNames[musicIndex];
 
     const musicNameEl = document.getElementById('musicName');
@@ -1353,9 +1357,10 @@ function loadStories() {
     renderStory(currentLang);
   } catch (e) {
     console.error('故事加载失败:', e);
-    // 使用默认故事作为fallback
     window._zhStory = chineseStories[0];
     window._enStory = englishStories[0];
+    window._zhIndex = 0;
+    window._enIndex = 0;
     window._musicName = musicNames[0];
     renderStory(currentLang);
   }
@@ -1366,10 +1371,21 @@ function renderStory(lang) {
   document.getElementById('storyTag').textContent = story.tag;
   document.getElementById('storyTitle').textContent = story.title;
   document.getElementById('storyText').textContent = story.text;
-  // 更新语音按钮文字
-  updateVoiceButtonText();
-  // 切换故事时停止语音
-  if (isSpeaking) stopStoryVoice();
+
+  // 设置音频源
+  const audio = document.getElementById('storyAudio');
+  const idx = lang === 'zh' ? window._zhIndex : window._enIndex;
+  const prefix = lang === 'zh' ? 'zh' : 'en';
+  const fileNum = String(idx + 1).padStart(2, '0');  // 1→01, 2→02, etc.
+  audio.src = `audio/${prefix}_${fileNum}.mp3`;
+  audio.load();
+
+  // 重置按钮状态
+  const btn = document.getElementById('storyVoiceBtn');
+  if (btn) btn.classList.remove('playing');
+  const textEl = document.getElementById('voiceBtnText');
+  if (textEl) textEl.textContent = '播放故事 🔊';
+  isAudioPlaying = false;
 }
 
 function switchTab(lang) {
@@ -1379,413 +1395,66 @@ function switchTab(lang) {
   renderStory(lang);
 }
 
-// ============ STORY VOICE (Disney-style) ============
-let isSpeaking = false;
-let voiceList = [];
-let preferredZhVoice = null;
-let preferredEnVoice = null;
-let speechKeepAlive = null;
-let currentSentenceIdx = 0;
-let currentSentences = [];
+// ============ STORY AUDIO (专业配音) ============
+let isAudioPlaying = false;
 
-function initVoices() {
-  if (!window.speechSynthesis) return;
-  function loadVoices() {
-    voiceList = window.speechSynthesis.getVoices();
-
-    // ——— 中文声音优先级 ———
-    // 优先：Google中文普通话（最自然）> Apple Sinji/Ting-Ting > Microsoft YunXi（男声温暖）> 任意中文
-    const zhVoices = voiceList.filter(v => v.lang && /^zh/i.test(v.lang));
-    preferredZhVoice =
-      zhVoices.find(v => /google.*mandarin|google.*zh/i.test(v.name)) ||
-      zhVoices.find(v => /yunxi|yunyang|yunjian/i.test(v.name)) ||   // Microsoft男声
-      zhVoices.find(v => /xiaoxiao|xiaomo/i.test(v.name)) ||         // Microsoft女声（自然）
-      zhVoices.find(v => /sinji|ting.?ting|meijia|li.?na/i.test(v.name)) || // Apple中文
-      zhVoices.find(v => /microsoft/i.test(v.name)) ||
-      zhVoices.find(v => /google/i.test(v.name)) ||
-      zhVoices.find(v => v.lang === 'zh-CN') ||
-      zhVoices[0];
-
-    // ——— 英文声音优先级 ———
-    // 优先：Google en-US（流畅自然）> Apple Samantha/Ava > Microsoft Jenny/Aria（温暖）
-    const enVoices = voiceList.filter(v => v.lang && /^en/i.test(v.lang));
-    preferredEnVoice =
-      enVoices.find(v => /google.*english.*us|google.*en.*us/i.test(v.name)) ||
-      enVoices.find(v => /^(ava|samantha|karen|moira|tessa|allison)$/i.test(v.name)) ||
-      enVoices.find(v => /microsoft.*(jenny|aria|ana|zira)/i.test(v.name)) ||
-      enVoices.find(v => /google/i.test(v.name) && /en.*us/i.test(v.lang)) ||
-      enVoices.find(v => v.lang === 'en-US') ||
-      enVoices[0];
-
-    // 调试信息（开发时可看控制台）
-    if (preferredZhVoice) console.log('[TTS] 中文声音:', preferredZhVoice.name, preferredZhVoice.lang);
-    if (preferredEnVoice) console.log('[TTS] 英文声音:', preferredEnVoice.name, preferredEnVoice.lang);
+function toggleStoryAudio() {
+  const audio = document.getElementById('storyAudio');
+  if (!audio || !audio.src || audio.src === window.location.href) {
+    alert('音频文件加载中，请稍后再试');
+    return;
   }
-  loadVoices();
-  if (voiceList.length === 0) {
-    window.speechSynthesis.onvoiceschanged = loadVoices;
+  if (isAudioPlaying) {
+    audio.pause();
+    isAudioPlaying = false;
+    updateAudioBtnText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+  } else {
+    audio.play().then(() => {
+      isAudioPlaying = true;
+      updateAudioBtnText();
+      document.getElementById('storyVoiceBtn').classList.add('playing');
+    }).catch(err => {
+      console.error('播放失败:', err);
+      // Fallback: 提示用户交互
+      alert('请先点击页面任意位置，再点击播放按钮');
+    });
   }
 }
 
-function updateVoiceButtonText() {
+// 音频播放完成
+function setupAudioEvents() {
+  const audio = document.getElementById('storyAudio');
+  if (!audio) return;
+  audio.addEventListener('ended', function() {
+    isAudioPlaying = false;
+    updateAudioBtnText();
+    const btn = document.getElementById('storyVoiceBtn');
+    if (btn) btn.classList.remove('playing');
+  });
+  audio.addEventListener('pause', function() {
+    isAudioPlaying = false;
+    updateAudioBtnText();
+    const btn = document.getElementById('storyVoiceBtn');
+    if (btn) btn.classList.remove('playing');
+  });
+  audio.addEventListener('play', function() {
+    isAudioPlaying = true;
+    updateAudioBtnText();
+  });
+}
+
+function updateAudioBtnText() {
   const textEl = document.getElementById('voiceBtnText');
   if (!textEl) return;
-  if (isSpeaking) {
-    textEl.textContent = currentLang === 'zh' ? '爸爸正在讲故事...' : '妈妈正在讲故事...';
-  } else {
-    textEl.textContent = currentLang === 'zh' ? '爸爸讲故事' : '妈妈讲故事';
-  }
+  textEl.textContent = isAudioPlaying ? '暂停播放 ⏸' : '播放故事 ▶';
 }
 
-// 将故事拆分成段落（以空行或换行为边界），更自然的停顿单位
-function splitIntoSentences(text, lang) {
-  let units = [];
-  if (lang === 'zh') {
-    // 按段落分割，每段内再按句号分小块
-    const paras = text.split(/\n+/).map(s => s.trim()).filter(s => s.length > 0);
-    paras.forEach((para, pi) => {
-      const sents = para.replace(/([。！？…]+)/g, '$1|||').split('|||')
-        .map(s => s.trim()).filter(s => s.length > 0);
-      sents.forEach((s, si) => {
-        units.push({ text: s, isParagraphEnd: si === sents.length - 1, paragraphIdx: pi });
-      });
-    });
-  } else {
-    const paras = text.split(/\n+/).map(s => s.trim()).filter(s => s.length > 0);
-    paras.forEach((para, pi) => {
-      const sents = para.replace(/([.!?]+)/g, '$1|||').split('|||')
-        .map(s => s.trim()).filter(s => s.length > 0);
-      sents.forEach((s, si) => {
-        units.push({ text: s, isParagraphEnd: si === sents.length - 1, paragraphIdx: pi });
-      });
-    });
-  }
-  return units;
-}
-
-// 根据句子内容分析情感，动态调整语速和音调，模拟迪士尼讲故事风格
-function analyzeSentence(unit, lang) {
-  const s = unit.text;
-  // 基准：中文爸爸讲故事（温暖、低沉、有磁性）；英文妈妈讲故事（温柔、明亮）
-  let rate = lang === 'zh' ? 0.82 : 0.85;
-  let pitch = lang === 'zh' ? 0.90 : 1.08;
-  let pauseAfter = unit.isParagraphEnd ? 750 : 320;
-
-  if (lang === 'zh') {
-    if (/[？]/.test(s)) {            // 疑问：好奇上扬，声音轻
-      pitch += 0.13; rate += 0.04; pauseAfter = 500;
-    } else if (/[！]/.test(s)) {     // 感叹/惊喜：兴奋，稍快
-      rate += 0.08; pitch += 0.08; pauseAfter = 450;
-    } else if (/[""\u300c\u300e「]/.test(s)) {  // 角色对话：角色感，稍微变化
-      pitch += 0.05; rate += 0.02;
-    } else if (/…|…|\.{3}/.test(s)) { // 省略号：神秘，停顿
-      rate -= 0.08; pauseAfter = 900;
-    } else if (s.length > 40) {      // 长句：娓娓道来，放慢
-      rate -= 0.07;
-    } else if (s.length < 10) {      // 短句：干净利落
-      rate += 0.03;
-    }
-  } else {
-    if (/[?]/.test(s)) {             // 疑问句：好奇上扬
-      pitch += 0.10; rate += 0.05; pauseAfter = 500;
-    } else if (/[!]/.test(s)) {      // 感叹：充满活力
-      rate += 0.08; pitch += 0.07; pauseAfter = 400;
-    } else if (/"[^"]+"/.test(s)) {  // 对话：角色感
-      pitch += 0.06; rate += 0.03;
-    } else if (/\.{3}|…/.test(s)) {  // 省略：神秘，停顿
-      rate -= 0.07; pauseAfter = 800;
-    } else if (s.length > 60) {      // 长叙述：温柔缓慢
-      rate -= 0.06;
-    }
-  }
-  // 确保参数在合理范围内
-  rate = Math.max(0.6, Math.min(1.1, rate));
-  pitch = Math.max(0.7, Math.min(1.5, pitch));
-  return { rate, pitch, pauseAfter };
-}
-
-function toggleStoryVoice() {
-  if (isSpeaking) {
-    stopStoryVoice();
-  } else {
-    playStoryVoice();
-  }
-}
-
-function playStoryVoice() {
-  const story = currentLang === 'zh' ? window._zhStory : window._enStory;
-  if (!story || !window.speechSynthesis) {
-    alert('您的设备暂不支持语音朗读，请用Safari或Chrome浏览器打开');
-    return;
-  }
-  window.speechSynthesis.cancel();
-
-  // 确保声音列表已加载（iOS 必须在用户手势内触发）
-  if (voiceList.length === 0) { initVoices(); }
-
-  currentSentences = splitIntoSentences(story.text, currentLang);
-  currentSentenceIdx = 0;
-  isSpeaking = true;
-  updateVoiceButtonText();
-  document.getElementById('storyVoiceBtn').classList.add('playing');
-
-  // iOS 修复：定期 resume 防止语音在 15 秒后中断
-  speechKeepAlive = setInterval(() => {
-    if (window.speechSynthesis && window.speechSynthesis.speaking) {
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }
-  }, 8000);
-
-  speakSentence(currentSentences, 0);
-}
-
-function speakSentence(sentences, idx) {
-  if (!isSpeaking) return;
-  if (idx >= sentences.length) {
-    // 朗读完成
-    isSpeaking = false;
-    updateVoiceButtonText();
-    document.getElementById('storyVoiceBtn').classList.remove('playing');
-    if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
-    return;
-  }
-
-  const unit = sentences[idx];
-  const params = analyzeSentence(unit, currentLang);
-  const utter = new SpeechSynthesisUtterance(unit.text);
-
-  if (currentLang === 'zh') {
-    utter.lang = 'zh-CN';
-    utter.rate = params.rate;
-    utter.pitch = params.pitch;
-    utter.volume = 1.0;
-    // 延迟获取，确保声音列表已加载
-    const v = preferredZhVoice || window.speechSynthesis.getVoices().find(v => /^zh/i.test(v.lang));
-    if (v) utter.voice = v;
-  } else {
-    utter.lang = 'en-US';
-    utter.rate = params.rate;
-    utter.pitch = params.pitch;
-    utter.volume = 1.0;
-    const v = preferredEnVoice || window.speechSynthesis.getVoices().find(v => /^en/i.test(v.lang));
-    if (v) utter.voice = v;
-  }
-
-  const pauseMs = (idx === sentences.length - 1) ? 0 : params.pauseAfter;
-
-  utter.onend = function() {
-    currentSentenceIdx = idx + 1;
-    if (pauseMs > 0) {
-      setTimeout(() => speakSentence(sentences, idx + 1), pauseMs);
-    } else {
-      isSpeaking = false;
-      updateVoiceButtonText();
-      document.getElementById('storyVoiceBtn').classList.remove('playing');
-      if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
-    }
-  };
-  utter.onerror = function(e) {
-    // 仅在非中断错误时停止（用户主动停止会触发 interrupted，不需要提示）
-    if (e.error !== 'interrupted' && e.error !== 'canceled') {
-      console.warn('[TTS] error:', e.error);
-    }
-    isSpeaking = false;
-    updateVoiceButtonText();
-    document.getElementById('storyVoiceBtn').classList.remove('playing');
-    if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
-  };
-  window.speechSynthesis.speak(utter);
-}
-
-function stopStoryVoice() {
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  isSpeaking = false;
-  updateVoiceButtonText();
-  if (speechKeepAlive) { clearInterval(speechKeepAlive); speechKeepAlive = null; }
-  const btn = document.getElementById('storyVoiceBtn');
-  if (btn) btn.classList.remove('playing');
-}
-
-// ============ MUSIC ============
-function initSynth() {
-  if (synth) return;
-
-  // 确保主输出音量正常
-  Tone.Destination.volume.value = 0;
-
-  // PolySynth for gentle piano-like chords
-  synth = new Tone.PolySynth(Tone.Synth, {
-    oscillator: { type: "triangle" },
-    envelope: {
-      attack: 0.08,
-      decay: 0.4,
-      sustain: 0.4,
-      release: 1.5
-    }
-  });
-
-  // 简单链式连接：合成器 -> 滤波器 -> 输出（去掉混响，兼容手机）
-  const filter = new Tone.Filter(1200, "lowpass");
-  synth.connect(filter);
-  filter.toDestination();
-
-  // 设置音量
-  synth.volume.value = -6;
-
-  // Lullaby-like melody patterns
-  const patterns = [
-    // Pattern 1: Moonlight lullaby
-    [
-      { time: "0:0", note: ["C4", "E4", "G4"], dur: "2n" },
-      { time: "0:2", note: ["G3", "B3", "D4"], dur: "2n" },
-      { time: "1:0", note: ["A3", "C4", "E4"], dur: "2n" },
-      { time: "1:2", note: ["F3", "A3", "C4"], dur: "2n" },
-      { time: "2:0", note: ["C4", "E4", "G4"], dur: "2n" },
-      { time: "2:2", note: ["G3", "B3", "D4"], dur: "2n" },
-      { time: "3:0", note: ["A3", "C4", "E4"], dur: "2n" },
-      { time: "3:2", note: ["F3", "A3", "C4"], dur: "1n" },
-    ],
-    // Pattern 2: Star melody
-    [
-      { time: "0:0", note: ["G3", "B3", "D4"], dur: "2n" },
-      { time: "0:2", note: ["C4", "E4", "G4"], dur: "2n" },
-      { time: "1:0", note: ["A3", "C4", "E4"], dur: "2n" },
-      { time: "1:2", note: ["G3", "B3", "D4"], dur: "2n" },
-      { time: "2:0", note: ["F3", "A3", "C4"], dur: "2n" },
-      { time: "2:2", note: ["C4", "E4", "G4"], dur: "2n" },
-      { time: "3:0", note: ["G3", "B3", "D4"], dur: "2n" },
-      { time: "3:2", note: ["C4", "E4", "G4"], dur: "1n" },
-    ]
-  ];
-
-  const selectedPattern = patterns[currentDayIndex % patterns.length];
-
-  loop = new Tone.Part((time, value) => {
-    synth.triggerAttackRelease(value.note, value.dur, time);
-  }, selectedPattern);
-
-  loop.loop = true;
-  loop.loopEnd = "4m";
-}
-
-function toggleMusic() {
-  if (!isPlaying) {
-    startMusic();
-  } else {
-    stopMusic();
-  }
-}
-
-async function startMusic() {
-  if (typeof Tone === 'undefined') {
-    alert('音乐播放器暂时不可用，请检查网络连接');
-    return;
-  }
-  // 确保音频上下文已启动（移动设备需要用户手势）
-  if (Tone.context && Tone.context.state !== 'running') {
-    await Tone.start();
-    await Tone.context.resume();
-  }
-  initSynth();
-
-  Tone.Transport.position = 0;
-  Tone.Transport.start();
-  loop.start(0);
-
-  isPlaying = true;
-  updatePlayButton();
-  startTimer();
-  animateBars(true);
-}
-
-function stopMusic() {
-  if (loop) loop.stop();
-  if (typeof Tone !== 'undefined' && Tone.Transport) Tone.Transport.stop();
-
-  isPlaying = false;
-  updatePlayButton();
-  stopTimer();
-  animateBars(false);
-}
-
-function updatePlayButton() {
-  document.getElementById('playIcon').style.display = isPlaying ? 'none' : 'block';
-  document.getElementById('pauseIcon').style.display = isPlaying ? 'block' : 'none';
-  document.getElementById('playBtn').classList.toggle('playing', isPlaying);
-}
-
-function changeVolume(val) {
-  if (synth) synth.volume.value = parseFloat(val);
-}
-
-function animateBars(active) {
-  for (let i = 1; i <= 7; i++) {
-    document.getElementById('bar' + i).classList.toggle('active', active);
-  }
-}
-
-// ============ TIMER ============
-function startTimer() {
-  secondsPlayed = 0;
-  document.getElementById('timerDisplay').textContent = '00:00 / 05:00';
-  timerInterval = setInterval(() => {
-    secondsPlayed++;
-    document.getElementById('timerDisplay').textContent = formatTime(secondsPlayed) + ' / 05:00';
-    if (secondsPlayed >= 300) { // 5 minutes
-      stopMusic();
-      alert('🎵 今天的音乐时间结束啦～爸爸和妈妈可以轻轻摸摸肚皮，跟宝宝说声晚安。');
-    }
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(timerInterval);
-}
-
-// ============ START ============
-function startApp() {
-  document.getElementById('startOverlay').classList.add('hidden');
-  try {
-    if (typeof Tone !== 'undefined') {
-      Tone.start().catch(() => {}); // Pre-init audio context (best effort)
-    }
-  } catch (e) {
-    // ignore
-  }
-  // 确保故事已加载
-  loadStories();
-}
-
-// ============ SHARE ============
-function sharePage() {
-  const url = window.location.href;
-  if (navigator.share) {
-    navigator.share({
-      title: '大冬和媛媛的胎教时光 - 18周+6天',
-      text: '大冬和媛媛每天为宝宝准备胎教音乐和故事，一起来感受这份温暖吧！',
-      url: url
-    });
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      alert('链接已复制，快发给家人们吧！');
-    });
-  } else {
-    const input = document.createElement('input');
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    alert('链接已复制，快发给家人们吧！');
-  }
-}
-
-// ============ INIT ============
+// ============ INIT ============\n// ============ INIT ============
 window.onload = function() {
   updateProgress();
   loadStories();
-  initVoices();
+  setupAudioEvents();
 };
 </script>
 </body>
