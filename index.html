@@ -690,7 +690,7 @@ body {
   <div class="baby-icon">✨</div>
   <h2>大冬和媛媛的胎教小天地</h2>
   <p>按下播放键，让音乐带着我们的爱<br>轻轻传递给肚子里的小宝贝</p>
-  <button class="start-btn" onclick="startApp()">开始体验</button>
+  <button class="start-btn" id="startBtn">开始体验</button>
 </div>
 
 <svg width="0" height="0" style="position:absolute">
@@ -1454,7 +1454,8 @@ function updateAudioBtnText() {
   textEl.textContent = isAudioPlaying ? '暂停播放 ⏸' : '播放故事 ▶';
 }
 
-// ============ INIT ============\n// ============ INIT ============
+// ============ INIT ============
+// ============ INIT ============
 
 // 点击"开始体验"：隐藏遮罩，显示主内容，执行初始化
 function startApp() {
@@ -1472,6 +1473,20 @@ function startApp() {
 window.onload = function() {
   updateProgress();
   loadStories();
+
+  // 绑定"开始体验"按钮（使用 addEventListener，更稳健）
+  var btn = document.getElementById('startBtn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      var overlay = document.getElementById('startOverlay');
+      if (overlay) overlay.classList.add('hidden');
+      var container = document.querySelector('.container');
+      if (container) container.classList.add('visible');
+      if (typeof updateProgress === 'function') updateProgress();
+      if (typeof loadStories === 'function') loadStories();
+      if (typeof setupAudioEvents === 'function') setupAudioEvents();
+    });
+  }
 };
 </script>
 </body>
