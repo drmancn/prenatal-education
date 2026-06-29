@@ -5,7 +5,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260629140800 (Cache Buster) -->
+<!-- Version: 20260629155000 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -698,6 +698,76 @@ body {
 .start-btn:active {
   transform: scale(0.95);
 }
+
+/* Password panel */
+.password-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  padding: 0 32px;
+  animation: fadeIn 0.3s ease;
+}
+
+.password-panel .password-hint {
+  font-size: 14px;
+  color: #B89098;
+  margin-bottom: 8px;
+  line-height: 1.6;
+  text-align: center;
+  padding: 0;
+}
+
+.password-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #FFD1DC;
+  border-radius: 28px;
+  font-size: 16px;
+  text-align: center;
+  background: white;
+  color: #5A4A4A;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.password-input:focus {
+  border-color: #FFB5C5;
+  box-shadow: 0 0 0 4px rgba(255, 181, 197, 0.2);
+}
+
+.password-error {
+  color: #E57373;
+  font-size: 13px;
+  margin-top: -4px;
+  animation: shake 0.4s ease;
+}
+
+.password-back {
+  background: none;
+  border: none;
+  color: #B89098;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
 </style>
 </head>
 <body>
@@ -706,8 +776,17 @@ body {
 <div class="start-overlay" id="startOverlay">
   <div class="baby-icon">✨</div>
   <h2>大冬和媛媛的胎教小天地</h2>
-  <p>按下播放键，让音乐带着我们的爱<br>轻轻传递给肚子里的小宝贝</p>
-  <button class="start-btn" id="startBtn" onclick="startApp()">开始体验</button>
+  <div id="welcomePanel">
+    <p>按下播放键，让音乐带着我们的爱<br>轻轻传递给肚子里的小宝贝</p>
+    <button class="start-btn" id="startBtn" onclick="showPasswordModal()">开始体验</button>
+  </div>
+  <div id="passwordPanel" class="password-panel" style="display:none;">
+    <p class="password-hint">请输入专属密码，开启我们的小天地</p>
+    <input type="password" class="password-input" id="passwordInput" placeholder="在这里输入密码" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div class="password-error" id="passwordError" style="display:none;">密码不对哦，请再试一次 💕</div>
+    <button class="start-btn" onclick="checkPassword()">确认进入</button>
+    <button class="password-back" onclick="hidePasswordModal()">返回</button>
+  </div>
 </div>
 
 <svg width="0" height="0" style="position:absolute">
@@ -1701,45 +1780,69 @@ function updateAudioBtnText() {
   textEl.textContent = isAudioPlaying ? '暂停播放 ⏸' : '播放故事 ▶';
 }
 
-// ============ INIT ============
-// 点击"开始体验"：隐藏遮罩，显示主内容
-// 使用最简单可靠的方式：直接操作 style，不依赖 CSS 类
+// ============ INIT / PASSWORD GATE ============
+// 点击“开始体验”：显示密码输入面板
+function showPasswordModal() {
+  var welcomePanel = document.getElementById('welcomePanel');
+  var passwordPanel = document.getElementById('passwordPanel');
+  var input = document.getElementById('passwordInput');
+  if (welcomePanel) welcomePanel.style.display = 'none';
+  if (passwordPanel) passwordPanel.style.display = 'flex';
+  if (input) { input.value = ''; input.focus(); }
+  var errorEl = document.getElementById('passwordError');
+  if (errorEl) errorEl.style.display = 'none';
+}
+
+// 返回欢迎面板
+function hidePasswordModal() {
+  var welcomePanel = document.getElementById('welcomePanel');
+  var passwordPanel = document.getElementById('passwordPanel');
+  if (welcomePanel) welcomePanel.style.display = 'block';
+  if (passwordPanel) passwordPanel.style.display = 'none';
+}
+
+// 验证密码，通过后进入主页面
+function checkPassword() {
+  var input = document.getElementById('passwordInput');
+  var errorEl = document.getElementById('passwordError');
+  if (!input) return;
+  var password = input.value.trim();
+  if (password === 'yuanyuan') {
+    if (errorEl) errorEl.style.display = 'none';
+    startApp();
+  } else {
+    if (errorEl) errorEl.style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
+
+// 进入主页面：隐藏遮罩，显示主内容
 function startApp() {
   // 1. 隐藏遮罩层
   var overlay = document.getElementById('startOverlay');
   if (overlay) overlay.style.display = 'none';
-  
+
   // 2. 显示主容器
   var container = document.querySelector('.container');
   if (container) container.style.display = 'block';
-  
+
   // 3. 立即初始化所有数据（不用 setTimeout）
   try {
     if (typeof updateProgress === 'function') updateProgress();
   } catch(e) { console.error('updateProgress error:', e); }
-  
+
   try {
     if (typeof loadStories === 'function') loadStories();
   } catch(e) { console.error('loadStories error:', e); }
-  
+
   try {
     if (typeof setupAudioEvents === 'function') setupAudioEvents();
   } catch(e) { console.error('setupAudioEvents error:', e); }
 }
 
-// 自动初始化兜底：如果 2 秒后遮罩仍显示，自动进入主页面
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    var overlay = document.getElementById('startOverlay');
-    if (overlay && overlay.style.display !== 'none') {
-      console.log('⏰ 自动触发 startApp()');
-      startApp();
-    }
-  }, 2000);
-});
-
 // 不再在全局作用域执行任何代码，只定义函数
-// 按钮通过 HTML 的 onclick="startApp()" 绑定
+// 按钮通过 HTML 的 onclick 绑定
 </script>
 </body>
 </html>
