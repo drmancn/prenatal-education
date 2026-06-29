@@ -5,13 +5,23 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260622085712 (Cache Buster) -->
+<!-- Version: 20260629095314 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="description" content="大冬和媛媛的胎教时光，每天更新的胎教音乐与故事，陪伴宝宝健康成长">
-<title>大冬和媛媛的胎教时光 - 今日18周+6天</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<title>大冬和媛媛的胎教时光 - 今日20周+3天</title>
+<script>
+// Tone.js 加载失败时使用原生 Web Audio API 兜底
+window.toneLoadFailed = false;
+function loadToneFallback() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js';
+  s.onerror = function() { window.toneLoadFailed = true; };
+  document.head.appendChild(s);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" onerror="loadToneFallback()"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -720,7 +730,7 @@ body {
     </div>
     <h1>大冬和媛媛的胎教时光</h1>
     <div class="header-sub">每一天，爸爸和妈妈都在等你，小宝贝，你要健康快乐</div>
-    <div class="week-badge" id="weekBadge">今天是 18 周 + 6 天</div>
+    <div class="week-badge" id="weekBadge">今天是 20 周 + 3 天</div>
   </div>
 
   <!-- Progress -->
@@ -733,9 +743,9 @@ body {
           <circle class="progress-ring-fill" id="progressCircle" cx="60" cy="60" r="52"
             stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
         </svg>
-        <div class="progress-text" id="progressText">👶 18周+6</div>
+        <div class="progress-text" id="progressText">👶 20周+3</div>
       </div>
-      <div class="progress-label">已完成 46% · 距离预产期还有约 148 天</div>
+      <div class="progress-label" id="progressLabel">已完成 51% · 距离预产期还有约 137 天</div>
     </div>
   </div>
 
@@ -743,7 +753,7 @@ body {
   <div class="card" id="babySizeCard">
     <div class="card-title">今天宝宝多大了</div>
     <div class="baby-size-card">
-      <div class="baby-size-title" id="babySizeWeekLabel">第 19 周宝宝</div>
+      <div class="baby-size-title" id="babySizeWeekLabel">第 20 周宝宝</div>
       <div class="baby-size-visual">
         <div class="baby-size-svg-wrap">
           <svg id="babySvg" width="80" height="100" viewBox="0 0 80 100"></svg>
@@ -752,24 +762,24 @@ body {
         <div class="baby-size-vs">≈</div>
         <div class="baby-size-svg-wrap">
           <svg id="compareSvg" width="80" height="100" viewBox="0 0 80 100"></svg>
-          <div class="baby-size-label" id="compareLabel">芒果</div>
+          <div class="baby-size-label" id="compareLabel">香蕉</div>
         </div>
       </div>
       <div class="baby-size-stats">
         <div class="baby-size-stat">
-          <div class="val" id="babyCRL">—</div>
+          <div class="val" id="babyCRL">16.4</div>
           <div class="unit">身长(cm)</div>
         </div>
         <div class="baby-size-stat">
-          <div class="val" id="babyWeight">—</div>
+          <div class="val" id="babyWeight">300</div>
           <div class="unit">体重(g)</div>
         </div>
         <div class="baby-size-stat">
-          <div class="val" id="babySize">—</div>
+          <div class="val" id="babySize">16cm</div>
           <div class="unit">大约尺寸</div>
         </div>
       </div>
-      <div class="baby-size-fact" id="babySizeFact">宝宝正在快速发育中...</div>
+      <div class="baby-size-fact" id="babySizeFact">这是孕期的中间点！宝宝开始会吞咽羊水了</div>
     </div>
   </div>
 
@@ -790,14 +800,14 @@ body {
       <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
     </button>
-    <div class="music-info" id="musicName">《月光摇篮曲》- 柔和钢琴曲</div>
+    <div class="music-info" id="musicName">《晨光唤醒曲》- 温柔钢琴</div>
     <div class="timer-display" id="timerDisplay">00:00 / 05:00</div>
     <div class="volume-wrap">
       <label>音量</label>
-      <input type="range" id="volumeSlider" min="-30" max="0" value="-8" oninput="changeVolume(this.value)">
+      <input type="range" id="volumeSlider" min="0" max="100" value="60" oninput="changeVolume(this.value)">
     </div>
-    <div class="music-tip">
-      宝宝，这是爸爸和妈妈为你准备的音乐。18周的你已经开始听到声音啦，音量要刚刚好，像爸爸妈妈轻声说话那样温柔。播放时，妈妈可以把手轻轻放在肚皮上，爸爸可以俯下身轻声说说话——宝宝最喜欢听爸爸妈妈的声音了。
+    <div class="music-tip" id="musicTip">
+      宝宝，这是爸爸和妈妈为你准备的音乐。20周的你已经能听到更多声音啦，音量要刚刚好，像爸爸妈妈轻声说话那样温柔。播放时，妈妈可以把手轻轻放在肚皮上，爸爸可以俯下身轻声说说话——宝宝最喜欢听爸爸妈妈的声音了。
     </div>
   </div>
 
@@ -822,7 +832,7 @@ body {
 
   <!-- Tips -->
   <div class="card">
-    <div class="card-title">给爸爸和妈妈的18周小建议</div>
+    <div class="card-title" id="tipsTitle">给爸爸和妈妈的20周小建议</div>
     <ul class="tips-list">
       <li><span class="tip-icon">·</span><span>宝宝这时候最喜欢低频的柔和声音，爸爸哼歌给宝宝听，比任何播放器都管用</span></li>
       <li><span class="tip-icon">·</span><span>妈妈的声音通过骨传导最清晰，每天固定时间讲讲故事，宝宝会记住你的声音</span></li>
@@ -1155,8 +1165,10 @@ async function initTone() {
   if (!synth) {
     synth = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: 'sine' },
-      envelope: { attack: 2, decay: 1, sustain: 0.8, release: 3 }
+      envelope: { attack: 0.8, decay: 1, sustain: 0.6, release: 2 }
     }).toDestination();
+    const slider = document.getElementById('volumeSlider');
+    if (slider) changeVolume(slider.value);
   }
 }
 
@@ -1190,32 +1202,127 @@ function playMusic() {
 
 // 暂停音乐
 function pauseMusic() {
-  Tone.Transport.pause();
-  isPlaying = false;
-  updatePlayBtn();
-  stopTimer();
+  if (typeof Tone !== 'undefined') Tone.Transport.pause();
+  stopNativeMusic();
 }
 
 // 切换播放状态
 async function toggleMusic() {
   try {
-    await initTone();
-    if (isPlaying) {
-      pauseMusic();
+    if (typeof Tone !== 'undefined' && !window.toneLoadFailed) {
+      await initTone();
+      if (isPlaying) {
+        pauseMusic();
+      } else {
+        playMusic();
+      }
     } else {
-      playMusic();
+      if (isPlaying) {
+        pauseNativeMusic();
+      } else {
+        playNativeMusic();
+      }
     }
   } catch(e) {
     console.error('音乐播放失败:', e);
-    alert('音乐播放失败，请刷新页面重试');
+    // 再尝试原生兜底
+    if (isPlaying) {
+      pauseNativeMusic();
+    } else {
+      playNativeMusic();
+    }
   }
+}
+
+// 音量调节
+function changeVolume(val) {
+  const vol = parseInt(val, 10);
+  if (typeof Tone !== 'undefined' && synth && synth.volume) {
+    synth.volume.value = vol === 0 ? -60 : (vol - 100) * 0.3;
+  }
+  nativeVolume = vol / 100;
+}
+
+// ============ MUSIC FALLBACK (Native Web Audio API) ============
+let nativeCtx = null;
+let nativeGain = null;
+let nativeOsc = null;
+let nativeTimeout = null;
+let nativeVolume = 0.6;
+
+function initNativeAudio() {
+  if (!nativeCtx) {
+    nativeCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (nativeCtx.state === 'suspended') {
+    nativeCtx.resume();
+  }
+}
+
+function stopNativeMusic() {
+  if (nativeTimeout) { clearTimeout(nativeTimeout); nativeTimeout = null; }
+  if (nativeOsc) { nativeOsc.stop(); nativeOsc.disconnect(); nativeOsc = null; }
+  if (nativeGain) { nativeGain.disconnect(); nativeGain = null; }
+  isPlaying = false;
+  updatePlayBtn();
+  stopTimer();
+}
+
+function pauseNativeMusic() {
+  stopNativeMusic();
+}
+
+function playNativeNote(freq, duration, when) {
+  if (!nativeCtx) return;
+  const osc = nativeCtx.createOscillator();
+  const gain = nativeCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, when);
+  gain.gain.linearRampToValueAtTime(nativeVolume * 0.12, when + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.001, when + duration - 0.05);
+  osc.connect(gain);
+  gain.connect(nativeCtx.destination);
+  osc.start(when);
+  osc.stop(when + duration);
+}
+
+function playNativeMusic() {
+  initNativeAudio();
+  if (nativeTimeout) clearTimeout(nativeTimeout);
+  isPlaying = true;
+  updatePlayBtn();
+  startTimer();
+
+  const notes = [
+    261.63, 329.63, 392.00, 329.63,
+    349.23, 440.00, 392.00, 349.23,
+    329.63, 293.66, 261.63, 261.63,
+    196.00, 246.94, 293.66, 261.63
+  ];
+  const beats = [1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,2];
+  const tempo = 0.55; // 秒/拍
+
+  let index = 0;
+  function next() {
+    if (!isPlaying) return;
+    const freq = notes[index % notes.length];
+    const dur = beats[index % beats.length] * tempo;
+    playNativeNote(freq, dur, nativeCtx.currentTime);
+    index++;
+    nativeTimeout = setTimeout(next, dur * 1000);
+  }
+  next();
 }
 
 // 更新播放按钮
 function updatePlayBtn() {
   const btn = document.getElementById('playBtn');
   if (!btn) return;
-  btn.textContent = isPlaying ? '⏸ 暂停音乐' : '🎵 播放音乐';
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  if (playIcon) playIcon.style.display = isPlaying ? 'none' : 'block';
+  if (pauseIcon) pauseIcon.style.display = isPlaying ? 'block' : 'none';
   btn.classList.toggle('playing', isPlaying);
 }
 
@@ -1237,8 +1344,8 @@ function stopTimer() {
 }
 
 function updateTimerDisplay() {
-  const el = document.getElementById('timer');
-  if (el) el.textContent = formatTime(secondsPlayed);
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = formatTime(secondsPlayed) + ' / 05:00';
 }
 
 
@@ -1290,6 +1397,15 @@ function updateProgress() {
 
   // 更新胎儿大小图例
   updateBabySize(weeks);
+
+  // 更新结尾和音乐提示为当前孕周
+  const tipsTitle = document.getElementById('tipsTitle');
+  if (tipsTitle) tipsTitle.textContent = `给爸爸和妈妈的${weeks}周小建议`;
+
+  const musicTip = document.getElementById('musicTip');
+  if (musicTip) {
+    musicTip.textContent = `宝宝，这是爸爸和妈妈为你准备的音乐。${weeks}周的你已经能听到更多声音啦，音量要刚刚好，像爸爸妈妈轻声说话那样温柔。播放时，妈妈可以把手轻轻放在肚皮上，爸爸可以俯下身轻声说说话——宝宝最喜欢听爸爸妈妈的声音了。`;
+  }
 }
 
 // ============ BABY SIZE ============
@@ -1602,6 +1718,17 @@ function startApp() {
     if (typeof setupAudioEvents === 'function') setupAudioEvents();
   } catch(e) { console.error('setupAudioEvents error:', e); }
 }
+
+// 自动初始化兜底：如果 2 秒后遮罩仍显示，自动进入主页面
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    var overlay = document.getElementById('startOverlay');
+    if (overlay && overlay.style.display !== 'none') {
+      console.log('⏰ 自动触发 startApp()');
+      startApp();
+    }
+  }, 2000);
+});
 
 // 不再在全局作用域执行任何代码，只定义函数
 // 按钮通过 HTML 的 onclick="startApp()" 绑定
