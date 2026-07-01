@@ -5,7 +5,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260701153000 (Cache Buster) -->
+<!-- Version: 20260701160000 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -789,6 +789,15 @@ body {
   background: #000;
 }
 .video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+}
+.video-wrapper video {
   position: absolute;
   top: 0;
   left: 0;
@@ -1929,49 +1938,39 @@ const internationalVideos = [
   }
 ];
 
-// 国内动画片（Bilibili 嵌入，适合胎教，3-5分钟）
+// 国内动画片（直链MP4，完全无广告）
+// 如何替换成你自己的无广告动画片：
+//   1. 找视频：微信视频号、腾讯视频等平台找到想要的动画片（3-5分钟）
+//   2. 下载MP4：用浏览器插件（如 Video DownloadHelper）或录屏下载为MP4
+//   3. 上传得直链：把MP4上传到可访问的地方，获得直链：
+//      - 方案A（推荐）：上传到本项目的GitHub仓库（小文件直接提交）
+//      - 方案B：上传到云存储（阿里云OSS、腾讯云COS）并开启公开访问
+//      - 方案C：上传到 Internet Archive（archive.org）获得永久直链
+//   4. 填入下方：把获得的MP4直链填入对应条目的 url 字段即可
 const domesticVideos = [
   {
-    id: 'BV1g411z7qo',
-    title: '胎教音乐 - 莫扎特聪明音乐（完整版）',
-    duration: '04:12',
-    tip: '莫扎特音乐有助于胎儿听觉发育，每天睡前播放效果最好'
+    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny_512kb.mp4',
+    title: '小兔宝贝（示例动画 · 请见上方注释替换）',
+    duration: '03:32',
+    tip: '💡 这是示例视频——请按代码注释说明替换成你的无广告动画片'
   },
   {
-    id: 'BV1xt4y1P7qx',
-    title: '宝宝胎教动画 - 轻柔海底世界（彩色视觉刺激）',
-    duration: '03:50',
-    tip: '柔和色彩动画可以刺激胎儿的视觉神经，妈妈可以边看边和宝宝说话'
+    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    title: '梦幻之旅（示例动画 · 请替换）',
+    duration: '04:15',
+    tip: '💡 替换方法：把你的MP4文件上传网上，把直链填入 url 字段'
   },
   {
-    id: 'BV1Ex411W7Lx',
-    title: '胎教故事动画 - 小星星变奏曲',
-    duration: '04:28',
-    tip: '音乐+动画双重刺激，是很好的胎教素材，建议每天固定时间观看'
-  },
-  {
-    id: 'BV1xx411c7Qy',
-    title: '孕妈妈胎教 - 自然风景与古典乐',
-    duration: '05:00',
-    tip: '自然风景配合古典乐，让妈妈和宝宝一起放松，缓解孕期焦虑'
-  },
-  {
-    id: 'BV1Rx411W7Jx',
-    title: '宝宝第一动画 - 柔和色彩与摇篮曲',
-    duration: '03:38',
+    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    title: '小飞龙（示例动画 · 请替换）',
+    duration: '03:58',
     tip: '柔和色彩动画可以刺激胎儿的视觉神经发育，亮度调低保护眼睛'
   },
   {
-    id: 'BV1oW4y1M7kb',
-    title: '胎教音乐盒 - 每日10分钟轻柔曲目',
-    duration: '04:55',
-    tip: '专门为胎教设计的音乐盒风格，节奏稳定，有助于宝宝建立节律感'
-  },
-  {
-    id: 'BV1wT4y1P7qx',
-    title: '国学胎教动画 - 三字经儿歌动画版',
-    duration: '03:42',
-    tip: '国学启蒙从胎教开始，柔和的儿歌旋律让宝宝提前感受语言韵律'
+    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    title: '未来世界（示例动画 · 请替换）',
+    duration: '04:32',
+    tip: '动画色彩丰富但不刺眼，建议把屏幕亮度调至最低舒适档'
   }
 ];
 
@@ -2005,30 +2004,46 @@ function loadTodayVideo() {
   const source = document.getElementById('videoSource');
   const placeholder = document.getElementById('videoPlaceholder');
   const frame = document.getElementById('videoFrame');
+  let videoEl = document.getElementById('videoPlayer');
 
   if (!wrapper || !info) return;
 
   // 更新信息
-  const label = video.type === 'international' ? '🌍 国外精选' : '🇨🇳 国内精选';
+  const label = video.type === 'international' ? '🌍 国外精选' : '🇨🇳 国内精选（无广告）';
   info.innerHTML = `<strong>${video.title}</strong><br>时长：${video.duration} · ${label}`;
-  if (source) source.textContent = video.type === 'international' ? 'Source: YouTube · 需网络访问' : 'Source: 哔哩哔哩 Bilibili';
+  if (source) source.textContent = video.type === 'international' ? 'Source: YouTube · 需网络访问' : '直链MP4 · 完全无广告';
 
   // 根据类型嵌入视频
   if (video.type === 'international') {
     // YouTube 嵌入
     if (placeholder) placeholder.style.display = 'none';
+    if (videoEl) videoEl.style.display = 'none';
     if (frame) {
       frame.style.display = 'block';
       frame.src = `https://www.youtube.com/embed/${video.id}?autoplay=0&rel=0&modestbranding=1`;
     }
   } else {
-    // Bilibili 嵌入
+    // 国内视频：直链MP4，无广告，使用 <video> 标签
     if (placeholder) placeholder.style.display = 'none';
-    if (frame) {
-      frame.style.display = 'block';
-      // Bilibili 嵌入格式：https://player.bilibili.com/player.html?bvid=BVxxx
-      frame.src = `https://player.bilibili.com/player.html?bvid=${video.id}&autoplay=0`;
+    if (frame) frame.style.display = 'none';
+
+    // 创建或复用 <video> 元素
+    if (!videoEl) {
+      videoEl = document.createElement('video');
+      videoEl.id = 'videoPlayer';
+      videoEl.controls = true;
+      videoEl.preload = 'metadata';
+      videoEl.style.width = '100%';
+      videoEl.style.height = '100%';
+      videoEl.style.borderRadius = '16px';
+      videoEl.style.display = 'block';
+      videoEl.style.backgroundColor = '#0a0a0a';
+      wrapper.appendChild(videoEl);
+    } else {
+      videoEl.style.display = 'block';
     }
+    videoEl.src = video.url;
+    videoEl.load();
   }
 
   // 更新提示
