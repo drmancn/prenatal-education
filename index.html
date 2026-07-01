@@ -5,7 +5,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260629155000 (Cache Buster) -->
+<!-- Version: 20260701095800 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -832,7 +832,8 @@ body {
   <div class="card" id="babySizeCard">
     <div class="card-title">今天宝宝多大了</div>
     <div class="baby-size-card">
-      <div class="baby-size-title" id="babySizeWeekLabel">第 20 周宝宝</div>
+      <div class="baby-size-title" id="babySizeWeekLabel">第 21 周宝宝</div>
+      <div class="baby-size-daily" id="babySizeDaily" style="font-size:12px;color:#B89098;margin-top:2px;">今天约 26.3cm · 370g</div>
       <div class="baby-size-visual">
         <div class="baby-size-svg-wrap">
           <svg id="babySvg" width="80" height="100" viewBox="0 0 80 100"></svg>
@@ -841,24 +842,25 @@ body {
         <div class="baby-size-vs">≈</div>
         <div class="baby-size-svg-wrap">
           <svg id="compareSvg" width="80" height="100" viewBox="0 0 80 100"></svg>
-          <div class="baby-size-label" id="compareLabel">香蕉</div>
+          <div class="baby-size-label" id="compareLabel">胡萝卜</div>
         </div>
       </div>
       <div class="baby-size-stats">
         <div class="baby-size-stat">
-          <div class="val" id="babyCRL">16.4</div>
-          <div class="unit">身长(cm)</div>
+          <div class="val" id="babyCRL">25.6</div>
+          <div class="unit" id="babyCRLUnit">头脚长(cm)</div>
         </div>
         <div class="baby-size-stat">
-          <div class="val" id="babyWeight">300</div>
+          <div class="val" id="babyWeight">360</div>
           <div class="unit">体重(g)</div>
         </div>
         <div class="baby-size-stat">
-          <div class="val" id="babySize">16cm</div>
+          <div class="val" id="babySize">26cm</div>
           <div class="unit">大约尺寸</div>
         </div>
       </div>
-      <div class="baby-size-fact" id="babySizeFact">这是孕期的中间点！宝宝开始会吞咽羊水了</div>
+      <div class="baby-size-fact" id="babySizeFact">宝宝的眉毛和眼睑完全形成，睫毛也长出来了</div>
+      <div class="baby-size-source" style="font-size:11px;color:#C0A8B0;margin-top:6px;text-align:right;">数据参考：ACOG/WHO 胎儿生物测量标准</div>
     </div>
   </div>
 
@@ -1482,8 +1484,8 @@ function updateProgress() {
 
   document.getElementById('progressLabel').textContent = `已完成 ${percentComplete}% · 距离预产期还有约 ${remainingDays} 天`;
 
-  // 更新胎儿大小图例
-  updateBabySize(weeks);
+  // 更新胎儿大小图例（传入当前孕周和天数，支持每日插值）
+  updateBabySize(weeks, days);
 
   // 更新结尾和音乐提示为当前孕周
   const tipsTitle = document.getElementById('tipsTitle');
@@ -1497,44 +1499,48 @@ function updateProgress() {
 
 // ============ BABY SIZE ============
 // 每周胎儿数据: { crl: 身长cm, weight: 体重g, size: 近似尺寸, compare: 对比物, fact: 趣味事实 }
+// 数据来源: ACOG/WHO 胎儿生物测量参考标准 + BabyCenter 水果对比
+// 注意: 第4-20周为头臀长(CRL), 第21周起为头脚长(crown-heel length)
 const babyWeeklyData = {
-  4:  { crl:'0.1', weight:'<1',  size:'0.1cm', compare:'芝麻',    emoji:'sesame',  fact:'受精卵正在着床，比一粒芝麻还要小' },
-  5:  { crl:'0.2', weight:'<1',  size:'0.2cm', compare:'苹果籽',  emoji:'seed',    fact:'小心脏开始跳动，每分钟约160下' },
-  6:  { crl:'0.4', weight:'<1',  size:'0.4cm', compare:'豌豆',    emoji:'pea',     fact:'头部约占身体的一半，眼睛已经开始形成' },
-  7:  { crl:'1.0', weight:'1',   size:'1cm',   compare:'蓝莓',    emoji:'berry',   fact:'脑部正在快速发育，每分钟产生100个新神经细胞' },
-  8:  { crl:'1.6', weight:'1',   size:'1.6cm', compare:'覆盆子',  emoji:'berry2',  fact:'小手指和脚趾开始出现，虽然还是连在一起的' },
-  9:  { crl:'2.3', weight:'2',   size:'2.3cm', compare:'葡萄',    emoji:'grape',   fact:'牙齿的芽已经开始在牙龈下面生长了' },
-  10: { crl:'3.1', weight:'4',   size:'3cm',   compare:'枣',      emoji:'jujube',  fact:'宝宝现在已经有所有基本器官了！' },
-  11: { crl:'4.1', weight:'7',   size:'4cm',   compare:'无花果',  emoji:'fig',     fact:'宝宝开始有打嗝的动作，不过你还感觉不到' },
-  12: { crl:'5.4', weight:'14',  size:'5cm',   compare:'柠檬',    emoji:'lemon',   fact:'手指甲开始生长，脸部特征越来越清晰' },
-  13: { crl:'7.4', weight:'23',  size:'7cm',   compare:'豆荚',    emoji:'pod',     fact:'宝宝可以用拇指吸吮了，是个很萌的动作' },
-  14: { crl:'8.7', weight:'43',  size:'8.5cm', compare:'桃子',    emoji:'peach',   fact:'宝宝开始皱眉、做鬼脸，练习未来的表情' },
-  15: { crl:'10.1',weight:'70',  size:'10cm',  compare:'苹果',    emoji:'apple',   fact:'宝宝已经能感觉到光，虽然眼睛还是闭着的' },
-  16: { crl:'11.6',weight:'100', size:'11.5cm',compare:'梨',      emoji:'pear',    fact:'宝宝的腿现在比手臂长，比例越来越像人了' },
-  17: { crl:'13.0',weight:'140', size:'13cm',  compare:'白萝卜',  emoji:'radish',  fact:'听觉发育中，宝宝可以听到妈妈的心跳了' },
-  18: { crl:'14.2',weight:'190', size:'14cm',  compare:'甜椒',    emoji:'pepper',  fact:'宝宝开始能听到外面的声音，爸爸妈妈快多说话！' },
-  19: { crl:'15.3',weight:'240', size:'15cm',  compare:'芒果',    emoji:'mango',   fact:'感觉器官飞速发育，宝宝开始能区分甜和苦' },
-  20: { crl:'16.4',weight:'300', size:'16cm',  compare:'香蕉',    emoji:'banana',  fact:'这是孕期的中间点！宝宝开始会吞咽羊水了' },
-  21: { crl:'26.7',weight:'360', size:'26cm',  compare:'胡萝卜',  emoji:'carrot',  fact:'宝宝的眉毛和眼睑完全形成，睫毛也长出来了' },
-  22: { crl:'27.8',weight:'430', size:'27cm',  compare:'玉米棒',  emoji:'corn',    fact:'宝宝的皮肤上出现了一层白色保护蜡，叫胎脂' },
-  23: { crl:'28.9',weight:'501', size:'29cm',  compare:'芒果',    emoji:'mango',   fact:'宝宝每天大约睡12-14小时，梦见什么呢？' },
-  24: { crl:'30.0',weight:'600', size:'30cm',  compare:'玉米',    emoji:'corn',    fact:'宝宝的手可以握拳了，握力越来越强' },
-  25: { crl:'34.6',weight:'660', size:'34cm',  compare:'花椰菜',  emoji:'cauliflower', fact:'宝宝开始能听到节奏感强的音乐并做出反应' },
-  26: { crl:'35.6',weight:'760', size:'35cm',  compare:'莴苣',    emoji:'lettuce', fact:'宝宝的眼皮可以睁开了，终于能看见（模糊的）光' },
-  27: { crl:'36.6',weight:'875', size:'36cm',  compare:'花椰菜',  emoji:'cauliflower', fact:'宝宝的大脑快速发育，越来越聪明' },
-  28: { crl:'37.6',weight:'1005','size':'37cm', compare:'茄子',   emoji:'eggplant',fact:'宝宝开始存储脂肪，皮肤从皱巴巴变得光滑' },
-  29: { crl:'38.6',weight:'1153','size':'38cm', compare:'冬南瓜', emoji:'squash',  fact:'宝宝开始练习呼吸，吸入和呼出羊水' },
-  30: { crl:'39.9',weight:'1319','size':'40cm', compare:'卷心菜', emoji:'cabbage', fact:'宝宝的骨骼越来越坚硬，开始存储钙质' },
-  31: { crl:'41.1',weight:'1502','size':'41cm', compare:'椰子',   emoji:'coconut', fact:'宝宝的所有感官都已经发育完全啦！' },
-  32: { crl:'42.4',weight:'1702','size':'42cm', compare:'南瓜',   emoji:'pumpkin', fact:'宝宝的指甲已经长到指尖，很快就要修剪了' },
-  33: { crl:'43.7',weight:'1918','size':'43cm', compare:'菠萝',   emoji:'pineapple',fact:'宝宝每天喝约半升羊水，消化系统练习中' },
-  34: { crl:'45.0',weight:'2146','size':'45cm', compare:'小冬瓜', emoji:'wintermelon',fact:'大多数宝宝现在已经头朝下了，准备出来啦' },
-  35: { crl:'46.2',weight:'2383','size':'46cm', compare:'蜜瓜',   emoji:'melon',   fact:'宝宝的肺部几乎成熟，如果出生已经可以呼吸了' },
-  36: { crl:'47.4',weight:'2622','size':'47cm', compare:'木瓜',   emoji:'papaya',  fact:'宝宝每天可以翻身20次，在积极练习体位' },
-  37: { crl:'48.6',weight:'2859','size':'48cm', compare:'西瓜',   emoji:'watermelon',fact:'宝宝已经足月！随时可以和爸爸妈妈见面了' },
-  38: { crl:'49.8',weight:'3083','size':'49cm', compare:'橙子',   emoji:'orange',  fact:'宝宝随时准备好了，就等见面那一刻' },
-  39: { crl:'50.7',weight:'3288','size':'50cm', compare:'小西瓜', emoji:'watermelon',fact:'宝宝的免疫系统继续发育，准备面对外面的世界' },
-  40: { crl:'51.2',weight:'3462','size':'51cm', compare:'南瓜',   emoji:'pumpkin', fact:'宝宝已经完全发育，随时准备出来见爸爸妈妈了！' },
+  4:  { crl:0.1, weight:0.5,  size:'0.1cm',  compare:'罂粟籽',  emoji:'sesame',      fact:'受精卵正在着床，比一粒罂粟籽还要小' },
+  5:  { crl:0.2, weight:0.8,  size:'0.2cm',  compare:'芝麻',    emoji:'seed',        fact:'小心脏开始跳动，每分钟约160下' },
+  6:  { crl:0.5, weight:0.9,  size:'0.5cm',  compare:'小扁豆',  emoji:'pea',         fact:'头部约占身体的一半，眼睛已经开始形成' },
+  7:  { crl:0.9, weight:0.9,  size:'0.9cm',  compare:'蓝莓',    emoji:'berry',       fact:'脑部正在快速发育，每分钟产生100个新神经细胞' },
+  8:  { crl:1.6, weight:1.0,  size:'1.6cm',  compare:'桑葚',    emoji:'berry2',      fact:'小手指和脚趾开始出现，虽然还是连在一起的' },
+  9:  { crl:2.3, weight:2.0,  size:'2.3cm',  compare:'葡萄',    emoji:'grape',       fact:'牙齿的芽已经开始在牙龈下面生长了' },
+  10: { crl:3.1, weight:4.0,  size:'3cm',    compare:'草莓',    emoji:'strawberry',  fact:'宝宝现在已经有所有基本器官了！' },
+  11: { crl:4.1, weight:7.0,  size:'4cm',    compare:'无花果',  emoji:'fig',         fact:'宝宝开始有打嗝的动作，不过你还感觉不到' },
+  12: { crl:5.4, weight:14,   size:'5cm',    compare:'青柠',    emoji:'lemon',       fact:'手指甲开始生长，脸部特征越来越清晰' },
+  13: { crl:7.4, weight:23,   size:'7cm',    compare:'豆荚',    emoji:'pod',         fact:'宝宝可以用拇指吸吮了，是个很萌的动作' },
+  14: { crl:8.7, weight:43,   size:'8.5cm',  compare:'柠檬',    emoji:'lemon',       fact:'宝宝开始皱眉、做鬼脸，练习未来的表情' },
+  15: { crl:10.1,weight:70,   size:'10cm',   compare:'苹果',    emoji:'apple',       fact:'宝宝已经能感觉到光，虽然眼睛还是闭着的' },
+  16: { crl:11.6,weight:100,  size:'11.5cm', compare:'牛油果',  emoji:'avocado',     fact:'宝宝的腿现在比手臂长，比例越来越像人了' },
+  17: { crl:13.0,weight:140,  size:'13cm',   compare:'白萝卜',  emoji:'radish',      fact:'听觉发育中，宝宝可以听到妈妈的心跳了' },
+  18: { crl:14.2,weight:190,  size:'14cm',   compare:'甜椒',    emoji:'pepper',      fact:'宝宝开始能听到外面的声音，爸爸妈妈快多说话！' },
+  19: { crl:15.3,weight:240,  size:'15cm',   compare:'芒果',    emoji:'mango',       fact:'感觉器官飞速发育，宝宝开始能区分甜和苦' },
+  20: { crl:16.4,weight:300,  size:'16cm',   compare:'香蕉',    emoji:'banana',      fact:'这是孕期的中间点！宝宝开始会吞咽羊水了' },
+  21: { crl:25.6,weight:360,  size:'26cm',   compare:'胡萝卜',  emoji:'carrot',      fact:'宝宝的眉毛和眼睑完全形成，睫毛也长出来了' },
+  22: { crl:27.8,weight:430,  size:'28cm',   compare:'椰子',    emoji:'coconut',     fact:'宝宝的皮肤上出现了一层白色保护蜡，叫胎脂' },
+  23: { crl:28.9,weight:500,  size:'29cm',   compare:'大芒果',  emoji:'mango',       fact:'宝宝每天大约睡12-14小时，梦见什么呢？' },
+  24: { crl:30.0,weight:600,  size:'30cm',   compare:'玉米棒',  emoji:'corn',        fact:'宝宝的手可以握拳了，握力越来越强' },
+  25: { crl:34.6,weight:680,  size:'34cm',   compare:'花椰菜',  emoji:'cauliflower', fact:'宝宝开始能听到节奏感强的音乐并做出反应' },
+  26: { crl:35.6,weight:780,  size:'35cm',   compare:'大莴苣',  emoji:'lettuce',     fact:'宝宝的眼皮可以睁开了，终于能看见（模糊的）光' },
+  27: { crl:36.6,weight:900,  size:'36cm',   compare:'大白菜',  emoji:'cabbage',     fact:'宝宝的大脑快速发育，越来越聪明' },
+  28: { crl:37.6,weight:1050, size:'37cm',   compare:'茄子',    emoji:'eggplant',    fact:'宝宝开始存储脂肪，皮肤从皱巴巴变得光滑' },
+  29: { crl:38.6,weight:1200, size:'38cm',   compare:'冬南瓜',  emoji:'squash',       fact:'宝宝开始练习呼吸，吸入和呼出羊水' },
+  30: { crl:39.9,weight:1350, size:'40cm',   compare:'大卷心菜',emoji:'cabbage2',    fact:'宝宝的骨骼越来越坚硬，开始存储钙质' },
+  31: { crl:41.1,weight:1500, size:'41cm',   compare:'大椰子',  emoji:'coconut',     fact:'宝宝的所有感官都已经发育完全啦！' },
+  32: { crl:42.4,weight:1750, size:'42cm',   compare:'小南瓜',  emoji:'pumpkin',     fact:'宝宝的指甲已经长到指尖，很快就要修剪了' },
+  33: { crl:43.7,weight:2000, size:'43cm',   compare:'菠萝',    emoji:'pineapple',   fact:'宝宝每天喝约半升羊水，消化系统练习中' },
+  34: { crl:45.0,weight:2200, size:'45cm',   compare:'哈密瓜',  emoji:'melon',       fact:'大多数宝宝现在已经头朝下了，准备出来啦' },
+  35: { crl:46.2,weight:2450, size:'46cm',   compare:'蜜瓜',    emoji:'melon',       fact:'宝宝的肺部几乎成熟，如果出生已经可以呼吸了' },
+  36: { crl:47.4,weight:2700, size:'47cm',   compare:'木瓜',    emoji:'papaya',      fact:'宝宝每天可以翻身20次，在积极练习体位' },
+  37: { crl:48.6,weight:2950, size:'48cm',   compare:'冬瓜',    emoji:'wintermelon', fact:'宝宝已经足月！随时可以和爸爸妈妈见面了' },
+  38: { crl:49.8,weight:3200, size:'49cm',   compare:'南瓜',    emoji:'pumpkin',     fact:'宝宝随时准备好了，就等见面那一刻' },
+  39: { crl:50.7,weight:3400, size:'50cm',   compare:'西瓜',    emoji:'watermelon',  fact:'宝宝的免疫系统继续发育，准备面对外面的世界' },
+  40: { crl:51.2,weight:3600, size:'51cm',   compare:'大西瓜',  emoji:'watermelon',  fact:'宝宝已经完全发育，随时准备出来见爸爸妈妈了！' },
+  41: { crl:51.7,weight:3800, size:'51cm',   compare:'巨无霸西瓜',emoji:'watermelon', fact:'宝宝还在安心等待，体重继续增加' },
+  42: { crl:52.0,weight:4000, size:'52cm',   compare:'超大西瓜',emoji:'watermelon',  fact:'宝宝准备好了，我们很快就能见到他了！' },
 };
 
 // 绘制胎儿SVG（专业但可爱的侧面轮廓）
@@ -1618,14 +1624,15 @@ function drawCompareSvg(svgEl, emoji) {
     seed:     `<ellipse cx="40" cy="50" rx="5" ry="8" fill="#8B6914" stroke="#6B5010" stroke-width="1"/>`,
     pea:      `<circle cx="40" cy="50" r="10" fill="#7DC87D" stroke="#5AA85A" stroke-width="1.5"/>`,
     berry:    `<circle cx="40" cy="50" r="14" fill="#9B59B6" stroke="#7D3C98" stroke-width="1.5"/><circle cx="35" cy="45" r="4" fill="#AF7AC5" opacity="0.5"/>`,
-    berry2:   `<circle cx="40" cy="50" r="15" fill="#E74C3C" stroke="#C0392B" stroke-width="1.5"/><circle cx="35" cy="44" r="5" fill="#F1948A" opacity="0.5"/>`,
+    berry2:   `<circle cx="40" cy="50" r="14" fill="#8B2252" stroke="#5B0025" stroke-width="1.5"/><circle cx="36" cy="45" r="4" fill="#C44D7B" opacity="0.5"/>`,
     grape:    `<circle cx="40" cy="50" r="16" fill="#8E44AD" stroke="#6C3483" stroke-width="1.5"/><circle cx="33" cy="43" r="5" fill="#BB8FCE" opacity="0.6"/>`,
-    jujube:   `<ellipse cx="40" cy="50" rx="12" ry="16" fill="#C0392B" stroke="#922B21" stroke-width="1.5"/>`,
+    strawberry: `<path d="M28,40 Q28,20 40,18 Q52,20 52,40 Q52,65 40,72 Q28,65 28,40Z" fill="#E74C3C" stroke="#C0392B" stroke-width="1.5"/><circle cx="34" cy="38" r="2" fill="#F9E79F"/><circle cx="46" cy="38" r="2" fill="#F9E79F"/><circle cx="40" cy="50" r="2" fill="#F9E79F"/><circle cx="34" cy="56" r="2" fill="#F9E79F"/><circle cx="46" cy="56" r="2" fill="#F9E79F"/><path d="M32,22 Q40,10 48,22" stroke="#27AE60" stroke-width="3" fill="none"/>`,
     fig:      `<ellipse cx="40" cy="52" rx="16" ry="18" fill="#8E44AD" stroke="#6C3483" stroke-width="1.5"/><ellipse cx="40" cy="36" rx="5" ry="4" fill="#7D3C98"/>`,
     lemon:    `<ellipse cx="40" cy="50" rx="19" ry="23" fill="#F4D03F" stroke="#D4AC0D" stroke-width="1.5"/><ellipse cx="40" cy="50" rx="14" ry="17" fill="#F9E79F" opacity="0.4"/>`,
     pod:      `<path d="M20,50 Q40,25 60,50 Q40,75 20,50Z" fill="#58D68D" stroke="#27AE60" stroke-width="1.5"/>`,
     peach:    `<circle cx="40" cy="50" r="23" fill="#FBAED2" stroke="#F06292" stroke-width="1.5"/><path d="M40,27 Q43,35 40,50" stroke="#F06292" stroke-width="1.5" fill="none"/>`,
     apple:    `<ellipse cx="40" cy="52" rx="22" ry="24" fill="#E74C3C" stroke="#C0392B" stroke-width="1.5"/><path d="M38,30 Q42,22 46,27" stroke="#27AE60" stroke-width="2" fill="none"/>`,
+    avocado:  `<ellipse cx="40" cy="52" rx="14" ry="22" fill="#6B8E23" stroke="#556B2F" stroke-width="1.5"/><ellipse cx="40" cy="58" rx="6" ry="8" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1"/>`,
     pear:     `<ellipse cx="40" cy="58" rx="20" ry="24" fill="#F0E68C" stroke="#DAA520" stroke-width="1.5"/><ellipse cx="40" cy="36" rx="10" ry="14" fill="#F5F0A0" stroke="#DAA520" stroke-width="1.5"/>`,
     radish:   `<ellipse cx="40" cy="52" rx="14" ry="22" fill="#F8C8D0" stroke="#E08090" stroke-width="1.5"/><path d="M34,30 L36,18 M40,28 L40,14 M46,30 L48,18" stroke="#58D68D" stroke-width="2"/>`,
     pepper:   `<path d="M28,65 Q30,45 40,35 Q50,45 52,65 Q48,80 40,82 Q32,80 28,65Z" fill="#E74C3C" stroke="#C0392B" stroke-width="1.5"/><path d="M38,35 Q40,25 42,20" stroke="#27AE60" stroke-width="2" fill="none"/>`,
@@ -1635,14 +1642,15 @@ function drawCompareSvg(svgEl, emoji) {
     corn:     `<ellipse cx="40" cy="55" rx="16" ry="28" fill="#F9E04B" stroke="#D4AC0D" stroke-width="1.5"/><line x1="40" y1="27" x2="40" y2="12" stroke="#27AE60" stroke-width="3"/>`,
     cauliflower:`<circle cx="40" cy="52" r="26" fill="#F5F5DC" stroke="#D4D4B0" stroke-width="1.5"/><circle cx="30" cy="47" r="12" fill="#FAF0E6" stroke="#D4D4B0" stroke-width="1"/><circle cx="50" cy="47" r="12" fill="#FAF0E6" stroke="#D4D4B0" stroke-width="1"/>`,
     lettuce:  `<circle cx="40" cy="50" r="26" fill="#90EE90" stroke="#3CB371" stroke-width="1.5"/><circle cx="40" cy="50" r="18" fill="#98FB98" stroke="#3CB371" stroke-width="1"/>`,
+    cabbage:  `<circle cx="40" cy="50" r="28" fill="#98FB98" stroke="#228B22" stroke-width="1.5"/><path d="M30,40 Q40,30 50,40 Q40,50 30,40Z" fill="#ADFF2F" stroke="#228B22" stroke-width="1"/><path d="M25,50 Q40,40 55,50 Q40,60 25,50Z" fill="#7CFC00" stroke="#228B22" stroke-width="1"/>`,
+    cabbage2: `<circle cx="40" cy="50" r="28" fill="#E8F5E9" stroke="#2E7D32" stroke-width="1.5"/><path d="M25,38 Q40,28 55,38" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1"/><path d="M22,50 Q40,38 58,50" fill="#A5D6A7" stroke="#2E7D32" stroke-width="1"/><path d="M26,60 Q40,50 54,60" fill="#81C784" stroke="#2E7D32" stroke-width="1"/>`,
+    coconut:  `<circle cx="40" cy="50" r="26" fill="#8B4513" stroke="#5C2E00" stroke-width="1.5"/><path d="M30,36 Q40,30 50,36" stroke="#6B3A00" stroke-width="1" fill="none"/>`,
     eggplant: `<ellipse cx="40" cy="55" rx="20" ry="28" fill="#8B008B" stroke="#4B0082" stroke-width="1.5"/><path d="M37,27 Q38,18 40,14 Q42,18 43,27" stroke="#27AE60" stroke-width="2" fill="none"/>`,
     squash:   `<ellipse cx="40" cy="55" rx="24" ry="28" fill="#FFA500" stroke="#FF8C00" stroke-width="1.5"/>`,
-    cabbage:  `<circle cx="40" cy="50" r="28" fill="#90EE90" stroke="#228B22" stroke-width="1.5"/><circle cx="40" cy="50" r="18" fill="#98FB98" stroke="#228B22" stroke-width="1"/><circle cx="40" cy="50" r="8" fill="#ADFF2F" stroke="#228B22" stroke-width="1"/>`,
-    coconut:  `<circle cx="40" cy="50" r="26" fill="#8B4513" stroke="#5C2E00" stroke-width="1.5"/><path d="M30,36 Q40,30 50,36" stroke="#6B3A00" stroke-width="1" fill="none"/>`,
     pumpkin:  `<ellipse cx="40" cy="55" rx="28" ry="24" fill="#FF8C00" stroke="#FF6600" stroke-width="1.5"/><path d="M38,31 Q39,22 40,18 Q41,22 42,31" stroke="#228B22" stroke-width="2" fill="none"/><path d="M15,52 Q25,48 40,55 Q55,48 65,52" stroke="#E07000" stroke-width="1.5" fill="none"/>`,
     pineapple:`<ellipse cx="40" cy="60" rx="20" ry="26" fill="#FFD700" stroke="#FFA500" stroke-width="1.5"/><path d="M28,34 Q35,15 40,12 Q45,15 52,34" stroke="#228B22" stroke-width="2" fill="none"/><line x1="22" y1="60" x2="58" y2="60" stroke="#FFA500" stroke-width="1"/><line x1="40" y1="34" x2="40" y2="86" stroke="#FFA500" stroke-width="1"/>`,
     wintermelon:`<ellipse cx="40" cy="50" rx="28" ry="22" fill="#D0E8D0" stroke="#90B890" stroke-width="1.5"/>`,
-    melon:    `<ellipse cx="40" cy="52" rx="26" ry="28" fill="#FFDEAD" stroke="#DEB887" stroke-width="1.5"/>`,
+    melon:    `<ellipse cx="40" cy="52" rx="26" ry="28" fill="#FFDEAD" stroke="#DEB887" stroke-width="1.5"/><path d="M20,50 Q30,48 40,52 Q50,48 60,50" stroke="#D4A853" stroke-width="1" fill="none" opacity="0.6"/>`,
     papaya:   `<path d="M28,62 Q28,30 40,26 Q52,30 52,62 Q52,85 40,86 Q28,85 28,62Z" fill="#FF7F50" stroke="#FF6347" stroke-width="1.5"/>`,
     watermelon:`<ellipse cx="40" cy="50" rx="28" ry="22" fill="#FF6B6B" stroke="#CC2200" stroke-width="1.5"/><ellipse cx="40" cy="50" rx="28" ry="4" fill="#228B22" stroke="none" opacity="0.4"/>`,
     orange:   `<circle cx="40" cy="50" r="26" fill="#FFA500" stroke="#FF8C00" stroke-width="1.5"/><circle cx="37" cy="46" r="6" fill="#FFB732" opacity="0.3"/>`,
@@ -1650,12 +1658,26 @@ function drawCompareSvg(svgEl, emoji) {
   svgEl.innerHTML = shapes[emoji] || shapes.mango;
 }
 
-function updateBabySize(weeks) {
-  const data = babyWeeklyData[weeks] || babyWeeklyData[19];
+function updateBabySize(weeks, extraDays) {
+  const data = babyWeeklyData[weeks] || babyWeeklyData[20];
+  const nextData = babyWeeklyData[weeks + 1] || data;
+  const daysFraction = (extraDays || 0) / 7;
   
+  // 每日插值：计算当天精确身长和体重
+  const dailyCRL = data.crl + (nextData.crl - data.crl) * daysFraction;
+  const dailyWeight = data.weight + (nextData.weight - data.weight) * daysFraction;
+  const dailyCRLRound = Math.round(dailyCRL * 10) / 10;
+  const dailyWeightRound = Math.round(dailyWeight);
+  
+  // 更新标签
   document.getElementById('babySizeWeekLabel').textContent = `第 ${weeks} 周宝宝`;
+  document.getElementById('babySizeDaily').textContent = `今天约 ${dailyCRLRound}cm · ${dailyWeightRound}g`;
   document.getElementById('compareLabel').textContent = data.compare;
+  
+  // 区分CRL(头臀长)和头脚长(crown-heel)
+  const unitLabel = weeks <= 20 ? '头臀长(cm)' : '头脚长(cm)';
   document.getElementById('babyCRL').textContent = data.crl;
+  document.getElementById('babyCRLUnit').textContent = unitLabel;
   document.getElementById('babyWeight').textContent = data.weight;
   document.getElementById('babySize').textContent = data.size;
   document.getElementById('babySizeFact').textContent = data.fact;
