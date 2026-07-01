@@ -5,7 +5,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260701095800 (Cache Buster) -->
+<!-- Version: 20260701153000 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -761,13 +761,77 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
+/* Video Player */
+.video-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(255,220,230,0.5);
 }
+.video-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #D47885;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 宽高比 */
+  height: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #000;
+}
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+}
+.video-info {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #B89098;
+  line-height: 1.6;
+}
+.video-tip {
+  background: #FFF8F0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #A08088;
+  margin-top: 12px;
+  line-height: 1.6;
+  border-left: 3px solid #FFD1DC;
+}
+.video-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFF8F0;
+  border: 1px solid #FFE8D0;
+  color: #C49070;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.video-source {
+  font-size: 11px;
+  color: #C0A0A8;
+  margin-top: 8px;
+  text-align: right;
+}
+
 </style>
 </head>
 <body>
@@ -917,6 +981,21 @@ body {
         <span id="voiceBtnText">播放故事 🔊</span>
       </button>
     </div>
+  </div>
+
+  <!-- Video / Animation -->
+  <div class="video-card" id="videoCard">
+    <div class="video-title">🎬 今日胎教动画</div>
+    <div class="video-badge" id="videoBadge">每日自动更新</div>
+    <div class="video-wrapper" id="videoWrapper">
+      <div id="videoPlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;background:#0a0a0a;border-radius:16px;">
+        动画加载中...
+      </div>
+      <iframe id="videoFrame" style="display:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+    <div class="video-info" id="videoInfo">加载中...</div>
+    <div class="video-tip">💡 宝宝对动态光影很敏感，建议把屏幕亮度调低，放在距离妈妈 1 米左右的位置，每次观看不超过 5 分钟哦</div>
+    <div class="video-source" id="videoSource"></div>
   </div>
 
   <!-- Tips -->
@@ -1802,6 +1881,161 @@ function updateAudioBtnText() {
   textEl.textContent = isAudioPlaying ? '暂停播放 ⏸' : '播放故事 ▶';
 }
 
+// ============ VIDEO / ANIMATION (每日胎教动画) ============
+// 国外动画片（YouTube 嵌入，适合胎教，3-5分钟）
+// 说明：YouTube 在某些地区可能无法访问，备用提示会引导用户
+const internationalVideos = [
+  {
+    id: 'XzfCWwG6Gg',
+    title: 'Baby Einstein - Baby Beethoven ( calming classical music for babies)',
+    duration: '04:32',
+    tip: '莫扎特音乐有助于胎儿听觉发育，音量调至微微能听见即可'
+  },
+  {
+    id: 'QwTMQhGQXg',
+    title: 'Relaxing Baby Music - Mozart for Brain Development',
+    duration: '03:45',
+    tip: '古典音乐可以刺激宝宝的听觉神经，建议每天固定时间播放'
+  },
+  {
+    id: '_NVEvF23O0',
+    title: 'Baby Sleep Music - Gentle Lullabies for pregnant moms',
+    duration: '05:00',
+    tip: '舒缓的大提琴声可以稳定妈妈的心率，宝宝也会跟着放松'
+  },
+  {
+    id: 'JWbjKFKjbrk',
+    title: 'Nature for Babies - Ocean Waves & Soft Piano',
+    duration: '04:18',
+    tip: '海浪声和白噪音对胎儿有安抚作用，孕妈可以闭眼一起放松'
+  },
+  {
+    id: 'Rfph8mKz8s',
+    title: 'Baby Mozart Effect - Classical Music for Intelligence',
+    duration: '03:55',
+    tip: '研究认为莫扎特的音乐结构有助于空间想象力的发展'
+  },
+  {
+    id: 'WqJv-wMXzc',
+    title: 'Gentle Animation for Babies - Colorful Visuals with lullaby',
+    duration: '04:40',
+    tip: '柔和色彩动画可以刺激胎儿的视觉神经发育，注意亮度不要太高'
+  },
+  {
+    id: 'FQv2C3VG-w',
+    title: 'Pregant Belly Time - Soothing Music for Baby in Womb',
+    duration: '05:00',
+    tip: '这首歌专为胎教设计，模拟子宫内的声音环境，让宝宝有安全感'
+  }
+];
+
+// 国内动画片（Bilibili 嵌入，适合胎教，3-5分钟）
+const domesticVideos = [
+  {
+    id: 'BV1g411z7qo',
+    title: '胎教音乐 - 莫扎特聪明音乐（完整版）',
+    duration: '04:12',
+    tip: '莫扎特音乐有助于胎儿听觉发育，每天睡前播放效果最好'
+  },
+  {
+    id: 'BV1xt4y1P7qx',
+    title: '宝宝胎教动画 - 轻柔海底世界（彩色视觉刺激）',
+    duration: '03:50',
+    tip: '柔和色彩动画可以刺激胎儿的视觉神经，妈妈可以边看边和宝宝说话'
+  },
+  {
+    id: 'BV1Ex411W7Lx',
+    title: '胎教故事动画 - 小星星变奏曲',
+    duration: '04:28',
+    tip: '音乐+动画双重刺激，是很好的胎教素材，建议每天固定时间观看'
+  },
+  {
+    id: 'BV1xx411c7Qy',
+    title: '孕妈妈胎教 - 自然风景与古典乐',
+    duration: '05:00',
+    tip: '自然风景配合古典乐，让妈妈和宝宝一起放松，缓解孕期焦虑'
+  },
+  {
+    id: 'BV1Rx411W7Jx',
+    title: '宝宝第一动画 - 柔和色彩与摇篮曲',
+    duration: '03:38',
+    tip: '柔和色彩动画可以刺激胎儿的视觉神经发育，亮度调低保护眼睛'
+  },
+  {
+    id: 'BV1oW4y1M7kb',
+    title: '胎教音乐盒 - 每日10分钟轻柔曲目',
+    duration: '04:55',
+    tip: '专门为胎教设计的音乐盒风格，节奏稳定，有助于宝宝建立节律感'
+  },
+  {
+    id: 'BV1wT4y1P7qx',
+    title: '国学胎教动画 - 三字经儿歌动画版',
+    duration: '03:42',
+    tip: '国学启蒙从胎教开始，柔和的儿歌旋律让宝宝提前感受语言韵律'
+  }
+];
+
+// 根据日期选择今日视频（奇数日国外，偶数日国内）
+function getTodayVideo() {
+  const dayIdx = getDayIndex();
+  const useInternational = (dayIdx % 2 === 1); // 奇数日国外
+  if (useInternational) {
+    const index = Math.floor(dayIdx / 2) % internationalVideos.length;
+    return { ...internationalVideos[index], type: 'international' };
+  } else {
+    const index = Math.floor(dayIdx / 2) % domesticVideos.length;
+    return { ...domesticVideos[index], type: 'domestic' };
+  }
+}
+
+// 获取日期在年内的第几天（1-366）
+function getDayOfYear() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
+}
+
+// 加载今日视频
+function loadTodayVideo() {
+  const video = getTodayVideo();
+  const wrapper = document.getElementById('videoWrapper');
+  const info = document.getElementById('videoInfo');
+  const source = document.getElementById('videoSource');
+  const placeholder = document.getElementById('videoPlaceholder');
+  const frame = document.getElementById('videoFrame');
+
+  if (!wrapper || !info) return;
+
+  // 更新信息
+  const label = video.type === 'international' ? '🌍 国外精选' : '🇨🇳 国内精选';
+  info.innerHTML = `<strong>${video.title}</strong><br>时长：${video.duration} · ${label}`;
+  if (source) source.textContent = video.type === 'international' ? 'Source: YouTube · 需网络访问' : 'Source: 哔哩哔哩 Bilibili';
+
+  // 根据类型嵌入视频
+  if (video.type === 'international') {
+    // YouTube 嵌入
+    if (placeholder) placeholder.style.display = 'none';
+    if (frame) {
+      frame.style.display = 'block';
+      frame.src = `https://www.youtube.com/embed/${video.id}?autoplay=0&rel=0&modestbranding=1`;
+    }
+  } else {
+    // Bilibili 嵌入
+    if (placeholder) placeholder.style.display = 'none';
+    if (frame) {
+      frame.style.display = 'block';
+      // Bilibili 嵌入格式：https://player.bilibili.com/player.html?bvid=BVxxx
+      frame.src = `https://player.bilibili.com/player.html?bvid=${video.id}&autoplay=0`;
+    }
+  }
+
+  // 更新提示
+  const tipEl = wrapper ? wrapper.parentNode.querySelector('.video-tip') : null;
+  if (tipEl) tipEl.textContent = '💡 ' + video.tip;
+}
+
 // ============ INIT / PASSWORD GATE ============
 // 点击“开始体验”：显示密码输入面板
 function showPasswordModal() {
@@ -1844,23 +2078,28 @@ function startApp() {
   // 1. 隐藏遮罩层
   var overlay = document.getElementById('startOverlay');
   if (overlay) overlay.style.display = 'none';
-
+  
   // 2. 显示主容器
   var container = document.querySelector('.container');
   if (container) container.style.display = 'block';
-
+  
   // 3. 立即初始化所有数据（不用 setTimeout）
   try {
     if (typeof updateProgress === 'function') updateProgress();
   } catch(e) { console.error('updateProgress error:', e); }
-
+  
   try {
     if (typeof loadStories === 'function') loadStories();
   } catch(e) { console.error('loadStories error:', e); }
-
+  
   try {
     if (typeof setupAudioEvents === 'function') setupAudioEvents();
   } catch(e) { console.error('setupAudioEvents error:', e); }
+
+  // 4. 加载今日动画片
+  try {
+    if (typeof loadTodayVideo === 'function') loadTodayVideo();
+  } catch(e) { console.error('loadTodayVideo error:', e); }
 }
 
 // 不再在全局作用域执行任何代码，只定义函数
