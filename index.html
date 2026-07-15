@@ -5,7 +5,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260701160000 (Cache Buster) -->
+<!-- Version: 20260715180000 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -954,7 +954,7 @@ body {
       <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
     </button>
-    <div class="music-info" id="musicName">《晨光唤醒曲》- 温柔钢琴</div>
+    <div class="music-info" id="musicName">《高山流水》- 古琴</div>
     <div class="timer-display" id="timerDisplay">00:00 / 05:00</div>
     <div class="volume-wrap">
       <label>音量</label>
@@ -965,36 +965,35 @@ body {
     </div>
   </div>
 
-  <!-- Story -->
+  <!-- Poetry -->
   <div class="card">
-    <div class="card-title">今日胎教故事</div>
+    <div class="card-title">今日诗词鉴赏</div>
     <div class="daily-badge">每日自动更新</div>
     <div class="story-tabs">
-      <button class="tab-btn active" onclick="switchTab('zh')" id="tabZh">中文故事</button>
-      <button class="tab-btn" onclick="switchTab('en')" id="tabEn">英文故事</button>
+      <button class="tab-btn active" onclick="switchTab('zh')" id="tabZh">唐诗</button>
+      <button class="tab-btn" onclick="switchTab('en')" id="tabEn">宋词</button>
     </div>
     <div class="story-content" id="storyContent">
-      <div class="story-tag" id="storyTag">经典童话</div>
-      <div class="story-title" id="storyTitle">三只小猪</div>
-      <div class="story-text" id="storyText">猪妈妈有三只可爱的小猪，他们渐渐长大了。猪妈妈说："你们长大了，应该学本领，各自去盖一间房子吧。"
+      <div class="story-tag" id="storyTag">盛唐·李白</div>
+      <div class="story-title" id="storyTitle">静夜思</div>
+      <div class="story-text" id="storyText">床前明月光，疑是地上霜。
+举头望明月，低头思故乡。
 
-老大很懒惰，他用稻草很快地盖了一间草屋。老二觉得草屋不结实，但他也不想太辛苦，就用木头盖了一间木屋。老三最勤劳，他花了很长时间，用砖头一块一块地砌了一间坚固的砖屋。
+【白话译文】
+明亮的月光洒在床前，泛起一片银白，让人以为是地上结了霜。抬起头望着天上皎洁的明月，不由得低下头，思念起远方的故乡。
 
-有一天，一只大野狼来了。他吹了一口气，老大的草屋就被吹倒了。老大吓得跑到老二家。大野狼追到老二的木屋前，用力一撞，木屋也倒了。两只小猪拼命跑到老三家。
-
-大野狼来到砖屋前，吹啊吹，房子纹丝不动。他又用爪子抓，用身体撞，砖屋还是一动不动。大野狼想从烟囱爬进去，老三赶紧烧起大火。大野狼从烟囱滑下来，正好掉进火堆里，被烧得哇哇大叫，夹着尾巴逃走了。
-
-老大和老二惭愧地说："我们以后也要像老三一样，勤劳做事，不能偷懒。"从此，三只小猪在砖屋里过着快乐而安全的生活。</div>
+【诗词赏析】
+这是李白最脍炙人口的一首小诗，语言平易如话却意境深远。"疑"字写出了半梦半醒间的恍惚，"举头"与"低头"一仰一俯，将游子的思乡之情表达得淋漓尽致。短短二十个字，道尽了千百年来游子的共同心声。</div>
       <audio id="storyAudio" preload="none" style="display:none"></audio>
       <button class="story-voice-btn" id="storyVoiceBtn" onclick="toggleStoryAudio()">
-        <span id="voiceBtnText">播放故事 🔊</span>
+        <span id="voiceBtnText">朗读诗词 🔊</span>
       </button>
     </div>
   </div>
 
   <!-- Video / Animation -->
   <div class="video-card" id="videoCard">
-    <div class="video-title">🎬 今日胎教动画</div>
+    <div class="video-title">🎬 今日古典动画</div>
     <div class="video-badge" id="videoBadge">每日自动更新</div>
     <div class="video-wrapper" id="videoWrapper">
       <div id="videoPlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;background:#0a0a0a;border-radius:16px;">
@@ -1055,272 +1054,232 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 // ============ DATA ============
+// 唐诗（每日轮换，配译文与赏析，适合胎教朗诵）
 const chineseStories = [
   {
-    tag: "经典童话",
-    title: "小王子（节选）",
-    text: `狐狸说："对我来说，你只是一个小男孩，就像其他成千上万个小男孩一样没有什么两样。我不需要你。你也不需要我。对你来说，我也只是一只狐狸，和其他成千上万的狐狸没有什么不同。但是，如果你驯养了我，我们就会彼此需要。对我来说，你就是我的世界里独一无二的了；我对你来说，也是你的世界里的唯一了。"
+    tag: "盛唐·李白",
+    title: "静夜思",
+    text: `床前明月光，疑是地上霜。
+举头望明月，低头思故乡。
 
-"我开始懂了，"小王子说，"有一朵花……我想，她已经驯养了我……"
+【白话译文】
+明亮的月光洒在床前，泛起一片银白，让人以为是地上结了霜。抬起头望着天上皎洁的明月，不由得低下头，思念起远方的故乡。
 
-"这是可能的，"狐狸说，"世界上什么样的事都可能看到……"
-
-"啊！这不是在地球上的事。"小王子说。
-
-狐狸感到十分蹊跷。
-
-"在另一个星球上？"
-
-"是的。"
-
-"在那个星球上，有猎人吗？"
-
-"没有。"
-
-"这很有意思。那么，有鸡吗？"
-
-"也没有。"
-
-"没有十全十美的。"狐狸叹息地说道。`
+【诗词赏析】
+这是李白最脍炙人口的一首小诗，语言平易如话却意境深远。"疑"字写出了半梦半醒间的恍惚，"举头"与"低头"一仰一俯，将游子的思乡之情表达得淋漓尽致。短短二十个字，道尽了千百年来游子的共同心声。`
   },
   {
-    tag: "伊索寓言",
-    title: "龟兔赛跑",
-    text: `有一天，兔子和乌龟比赛跑步。兔子嘲笑乌龟爬得慢，乌龟说："总有一天我会赢的。"兔子就轻蔑地说："那我们现在就开始比赛！"
+    tag: "盛唐·孟浩然",
+    title: "春晓",
+    text: `春眠不觉晓，处处闻啼鸟。
+夜来风雨声，花落知多少。
 
-兔子飞快地跑着，乌龟拼命地爬。不一会儿，兔子与乌龟已经离得有很大一段距离了。兔子认为比赛太轻松了，它要先睡一会，并且自以为是地说："即使我就这样睡上一觉，乌龟也追不上我。"于是，兔子就在树旁躺下，不一会儿就睡着了。
+【白话译文】
+春天的夜里睡得香甜，不知不觉天就亮了，醒来时到处都能听到清脆的鸟叫声。回想昨夜的风声雨声，不知那些美丽的花朵被吹落了多少。
 
-乌龟看到兔子睡着了，不敢停下来休息，不停地往前爬。它爬呀爬，终于离终点越来越近了。当兔子醒来时，发现乌龟已经到达终点了。兔子输了比赛，它非常后悔，但已经来不及了。
-
-这个故事告诉我们：不可轻易小视他人。虚心使人进步，骄傲使人落后。要踏踏实实地做事情，不要半途而废，才会取得成功。`
+【诗词赏析】
+孟浩然用最朴素的语言写出了春天清晨的美好与淡淡惋惜。"处处闻啼鸟"写出了春天的生机盎然，"花落知多少"则透露出对落花的怜惜。全诗不着一字说"春"，却处处是春意。`
   },
   {
-    tag: "经典童话",
-    title: "丑小鸭",
-    text: `乡下有一所美丽的房子，周围有花园、小溪和草地。鸭妈妈正在孵蛋，她已经孵了很久了。终于，蛋壳开始裂开了，一只只小鸭子钻了出来。
+    tag: "盛唐·王之涣",
+    title: "登鹳雀楼",
+    text: `白日依山尽，黄河入海流。
+欲穷千里目，更上一层楼。
 
-可是，有一个特别大的蛋，过了好久才裂开。从里面钻出来的小家伙又大又丑，灰扑扑的，一点也不像其他小鸭子。大家都叫他"丑小鸭"。
+【白话译文】
+夕阳依傍着远山缓缓落下，黄河水滚滚向东流入大海。想要看到更远的千里风光，就要再登上一层楼。
 
-丑小鸭走到哪里都受到欺负。鸭子啄他，小鸡打他，连喂鸡的女仆也踢他。丑小鸭很伤心，他飞过篱笆逃走了。
-
-他来到沼泽地，住在野鸭群中。春天来了，丑小鸭展开翅膀飞了起来。他飞进了一座花园，看到三只美丽的白天鹅在水面上游来游去。丑小鸭低下头，从水面上看到了自己的倒影——那不再是一只粗笨的、深灰色的、又丑又令人讨厌的鸭子，而是一只优雅美丽的白天鹅！
-
-原来，他根本不是丑小鸭，而是一只小天鹅。只要经过时间的洗礼，美丽终会绽放。`
+【诗词赏析】
+这首诗仅二十个字，却写出了壮阔的自然景象和深刻的人生哲理。前两句写景，气势磅礴；后两句抒情，寓意深远。"欲穷千里目，更上一层楼"成为千古名句，激励人们不断进取、登高望远。`
   },
   {
-    tag: "睡前故事",
-    title: "月亮晚安",
-    text: `夜深了，小兔子躺在床上，透过窗户看着天上的月亮。月亮又大又圆，散发着柔和的光芒。
+    tag: "盛唐·李白",
+    title: "望庐山瀑布",
+    text: `日照香炉生紫烟，遥看瀑布挂前川。
+飞流直下三千尺，疑是银河落九天。
 
-"月亮婆婆，晚安。"小兔子轻声说。
+【白话译文】
+阳光照射在香炉峰上，云雾升腾仿佛生出紫色烟霞。远远望去，瀑布像一条白练悬挂在山前。飞奔而下的水流有三千尺之长，让人怀疑是天上的银河从九天之上倾泻而下。
 
-月亮婆婆听见了，温柔地眨了眨眼睛。月光洒在小兔子的床上，像一层薄薄的银纱。
-
-小兔子闭上眼睛，想起今天发生的开心事：早上吃到了甜甜的胡萝卜，中午和小伙伴在草地上玩耍，晚上妈妈讲了一个好听的故事。
-
-"星星们，晚安。"小兔子又说。
-
-天上的星星一闪一闪，好像在回应她。
-
-"枕头，晚安。被子，晚安。小床，晚安。"小兔子把身边的东西一一告别。
-
-"妈妈，晚安。"
-
-"晚安，我的小宝贝。"妈妈轻轻吻了吻小兔子的额头。
-
-月光下，小兔子甜甜地睡着了。梦里，她飞到了月亮上，和月亮婆婆一起，给世界上所有的小朋友送去甜甜的梦。`
+【诗词赏析】
+李白以奇特的想象和夸张的手法描绘了庐山瀑布的壮丽景象。"飞流直下三千尺"写出了瀑布的磅礴气势，"疑是银河落九天"更是神来之笔，将人间瀑布与天上银河联系起来，气势恢宏。`
   },
   {
-    tag: "中国传统",
-    title: "小蝌蚪找妈妈",
-    text: `池塘里有一群小蝌蚪，大大的脑袋，黑灰色的身子，甩着长长的尾巴，快活地游来游去。
+    tag: "盛唐·杜甫",
+    title: "绝句",
+    text: `两个黄鹂鸣翠柳，一行白鹭上青天。
+窗含西岭千秋雪，门泊东吴万里船。
 
-小蝌蚪们看见鲤鱼妈妈在教小鲤鱼捕食，就迎上去，问："鲤鱼阿姨，我们的妈妈在哪里？"鲤鱼妈妈说："你们的妈妈四条腿，宽嘴巴。到那边去找吧！"
+【白话译文】
+两只黄鹂在翠绿的柳枝间婉转鸣叫，一行白鹭展翅飞上蔚蓝的天空。从窗口望出去，可以看到西岭上千年不化的积雪，门前停泊着从万里之外的东吴驶来的船只。
 
-小蝌蚪们游啊游，看见一只乌龟摆动着四条腿在水里游。他们连忙追上去，叫着："妈妈，妈妈！"乌龟笑着说："我不是你们的妈妈。你们的妈妈头顶上有两只大眼睛，披着绿衣裳。你们到那边去找吧！"
-
-小蝌蚪们游过去，看见一只大白鹅"哗"地游过来。他们追上去，连声叫："妈妈！"大白鹅笑着说："小蝌蚪，你们认错了。我不是你们的妈妈，你们的妈妈穿着绿衣裳，唱起歌来'呱呱'的。你们到前面去找吧！"
-
-小蝌蚪们游到池塘边，看见荷叶上蹲着一只大青蛙，披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。小蝌蚪们游过去，叫着："妈妈，妈妈！"青蛙妈妈低头一看，笑着说："好孩子，你们已经长成青蛙了，快跳上来吧！"
-
-小蝌蚪们后腿一蹬，向前一跳，蹦到了荷叶上。他们和妈妈天天去捉害虫，成了庄稼的好朋友。`
+【诗词赏析】
+杜甫的这首绝句色彩明丽、画面感极强。黄、翠、白、青四种颜色交织，黄鹂与白鹭动静相衬。后两句由近及远，从小窗口望见大千世界，意境开阔而温馨，是写景诗的典范。`
   },
   {
-    tag: "经典童话",
-    title: "三只小猪",
-    text: `猪妈妈有三只可爱的小猪，他们渐渐长大了。猪妈妈说："你们长大了，应该学本领，各自去盖一间房子吧。"
+    tag: "中唐·孟郊",
+    title: "游子吟",
+    text: `慈母手中线，游子身上衣。
+临行密密缝，意恐迟迟归。
+谁言寸草心，报得三春晖。
 
-老大很懒惰，他用稻草很快地盖了一间草屋。老二觉得草屋不结实，但他也不想太辛苦，就用木头盖了一间木屋。老三最勤劳，他花了很长时间，用砖头一块一块地砌了一间坚固的砖屋。
+【白话译文】
+慈爱的母亲手中拿着针线，为即将远行的儿子缝制衣衫。临行前一针一线密密地缝着，心里担心儿子迟迟不能回来。谁说小草那一点点微弱的心意，能够报答得了春天阳光般的母恩呢？
 
-有一天，一只大野狼来了。他吹了一口气，老大的草屋就被吹倒了。老大吓得跑到老二家。大野狼追到老二的木屋前，用力一撞，木屋也倒了。两只小猪拼命跑到老三家。
-
-大野狼来到砖屋前，吹啊吹，房子纹丝不动。他又用爪子抓，用身体撞，砖屋还是一动不动。大野狼想从烟囱爬进去，老三赶紧烧起大火。大野狼从烟囱滑下来，正好掉进火堆里，被烧得哇哇大叫，夹着尾巴逃走了。
-
-老大和老二惭愧地说："我们以后也要像老三一样，勤劳做事，不能偷懒。"从此，三只小猪在砖屋里过着快乐而安全的生活。`
+【诗词赏析】
+这是歌颂母爱的千古绝唱。"密密缝"三个字写尽了母亲的爱与牵挂，朴实无华却感人至深。"谁言寸草心，报得三春晖"以小草与春阳作比，道出了子女对母亲无尽的感恩。胎教时朗诵此诗，让宝宝在母腹中就感受这份温暖的亲情。`
   },
   {
-    tag: "睡前故事",
-    title: "星星的礼物",
-    text: `在遥远的星空里，住着一颗善良的小星星。每天晚上，她都会从天上探出头，看着大地上的小朋友。
+    tag: "盛唐·张九龄",
+    title: "望月怀远",
+    text: `海上生明月，天涯共此时。
+情人怨遥夜，竟夕起相思。
+灭烛怜光满，披衣觉露滋。
+不堪盈手赠，还寝梦佳期。
 
-"今天我要选一个小朋友，送他一份特别的礼物。"小星星说。她在天空中转呀转，看见了一个躺在床上的小宝宝。
+【白话译文】
+一轮明月从海上升起，远在天涯的你此刻也和我一样望着同一轮月亮。有情的人怨恨这漫长的夜晚，整夜都在思念着对方。吹灭了蜡烛，月光洒满了房间令人怜爱；披上衣服出门，才发觉夜露已经打湿了衣裳。这美好的月光却无法捧在手中赠送给你，不如回去入睡，在梦中与你相会。
 
-"这个小朋友还没有睡着呢，让我给他送一个甜甜的梦。"小星星从天上摘下一片银色的月光，把它捏成一颗小小的星星糖。
-
-她把星星糖轻轻抛向大地。星星糖穿过云层，穿过窗户，轻轻地落在宝宝的枕头边。
-
-宝宝闻到了星星糖甜甜的香味，那是月光和花香混合的味道。宝宝慢慢闭上眼睛，嘴角露出了微笑。
-
-在梦里，宝宝飞到了星星上，和小星星一起跳舞。他们跳过月亮，跳过银河，和所有的星星朋友们一起，唱起了温柔的歌。
-
-"晚安，小朋友。"小星星轻轻地说，"明天晚上，我还会来看你的。"
-
-天亮了，宝宝醒来，还记得那个美丽的梦。虽然枕头边没有星星糖，但宝宝知道，那是小星星送给他最珍贵的礼物——一个美好的夜晚。`
+【诗词赏析】
+"海上生明月，天涯共此时"是传诵千古的名句，写出了相隔万里的人共享明月的深情。全诗意境优美、情感真挚，将思念之情与月色之美融为一体，适合夜晚安静时轻声朗诵给腹中宝宝听。`
   }
 ];
 
+// 宋词（每日轮换，配译文与赏析，适合胎教朗诵）
 const englishStories = [
   {
-    tag: "Classic Fairy Tale",
-    title: "The Little Prince (Excerpt)",
-    text: `"Come and play with me," proposed the little prince. "I am so unhappy."
+    tag: "北宋·苏轼",
+    title: "水调歌头·明月几时有",
+    text: `明月几时有？把酒问青天。
+不知天上宫阙，今夕是何年。
+我欲乘风归去，又恐琼楼玉宇，高处不胜寒。
+起舞弄清影，何似在人间。
 
-"I cannot play with you," the fox said. "I am not tamed."
+转朱阁，低绮户，照无眠。
+不应有恨，何事长向别时圆？
+人有悲欢离合，月有阴晴圆缺，此事古难全。
+但愿人长久，千里共婵娟。
 
-"Ah! Please excuse me," said the little prince. But, after some thought, he added: "What does that mean — 'tame'?"
+【白话译文】
+明月什么时候才有？我端着酒杯遥问苍天。不知道天上的宫殿，今晚是哪一年。我想乘风回到天上，又怕那美玉建成的楼宇，高处太过寒冷。不如在月光下起舞，与影子为伴，人间也自有乐趣。
 
-"You do not live here," said the fox. "What is it that you are looking for?"
+月光转过红色的楼阁，低低地照进雕花的窗户，照着无法入眠的人。明月不该有什么怨恨，可为什么总是在人离别的时候才圆呢？人有悲欢离合的遭遇，月有阴晴圆缺的变化，这种事自古以来就难以两全。只愿人们都能平安长久，即使相隔千里，也能共享这美好的月光。
 
-"I am looking for men," said the little prince. "What does that mean — 'tame'?"
-
-"It is an act too often neglected," said the fox. "It means to establish ties."
-
-"'To establish ties'?"
-
-"Just that," said the fox. "To me, you are still nothing more than a little boy who is just like a hundred thousand other little boys. And I have no need of you. And you, on your part, have no need of me. To you, I am nothing more than a fox like a hundred thousand other foxes. But if you tame me, then we shall need each other. To me, you will be unique in all the world. To you, I shall be unique in all the world..."
-
-"I am beginning to understand," said the little prince. "There is a flower... I think that she has tamed me..."`
+【诗词赏析】
+这是苏轼在中秋之夜思念弟弟苏辙时所作，被誉为"中秋词之绝唱"。"但愿人长久，千里共婵娟"是千古名句，表达了对亲人美好祝愿和旷达胸襟。全词意境空灵，既有对人生哲理的思考，又有温暖的祝愿，适合在月光下轻声吟诵给腹中的宝宝听。`
   },
   {
-    tag: "Aesop's Fable",
-    title: "The Tortoise and the Hare",
-    text: `Once upon a time, there was a hare who was very proud of how fast he could run. He laughed at the slow tortoise and said, "You are so slow! You will never get anywhere."
+    tag: "南唐·李煜",
+    title: "相见欢·无言独上西楼",
+    text: `无言独上西楼，月如钩。
+寂寞梧桐深院锁清秋。
+剪不断，理还乱，是离愁。
+别是一般滋味在心头。
 
-The tortoise smiled and replied, "I may be slow, but I can keep going. Let's have a race and see who wins."
+【白话译文】
+默默无言地独自登上西楼，一弯如钩的残月挂在天边。寂寞的梧桐树伫立在深深的庭院里，锁住了这清凉的秋天。
 
-The hare agreed and laughed. "This will be easy!" he thought.
+那剪也剪不断的，理也理不清的，正是离别的愁绪。这别有一种说不出的滋味，一直萦绕在心头。
 
-The race began. The hare ran very fast and soon left the tortoise far behind. "I have plenty of time," the hare thought. "I can take a nap and still win." So he lay down under a tree and fell asleep.
-
-Meanwhile, the tortoise kept walking slowly but steadily. Step by step, he moved forward. He passed the sleeping hare and kept going toward the finish line.
-
-When the hare woke up, he ran as fast as he could to the finish line. But it was too late! The tortoise had already crossed the line and won the race.
-
-The hare learned an important lesson: slow and steady wins the race. Being too proud and lazy can make you lose, even when you are very talented.`
+【诗词赏析】
+李煜以亡国之君的哀愁写下这首词，"剪不断，理还乱"将抽象的愁绪化为具象，成为写愁的千古名句。全词语言凝练、意境凄美，虽写愁苦，却有一种淡淡的诗意之美。适合安静夜晚低声吟诵。`
   },
   {
-    tag: "Classic Fairy Tale",
-    title: "The Ugly Duckling",
-    text: `In a cozy nest by the river, a mother duck sat on her eggs. One by one, the eggs hatched, and cute little ducklings popped out. But one egg was very large and took longer to hatch. When it finally cracked open, out came a big, gray bird who looked very different from the others.
+    tag: "南宋·李清照",
+    title: "一剪梅·红藕香残玉簟秋",
+    text: `红藕香残玉簟秋。轻解罗裳，独上兰舟。
+云中谁寄锦书来，雁字回时，月满西楼。
+花自飘零水自流。一种相思，两处闲愁。
+此情无计可消除，才下眉头，却上心头。
 
-"What a strange-looking duckling!" everyone said. They called him the Ugly Duckling and treated him poorly. The other ducklings pecked him, the chickens chased him, and even the girl who fed the ducks kicked him.
+【白话译文】
+粉红色的荷花已经凋谢，竹席上透出秋天的凉意。轻轻脱下外衣，独自登上小舟。云中是谁寄来了锦书？大雁飞回的时候，月光正洒满了西楼。
 
-The Ugly Duckling was very sad. He ran away and wandered through the cold winter alone. He was hungry and frightened, but he never gave up hope.
+花在独自飘零，水在独自流淌。同一种相思之情，却成了两处的闲愁。这份情思无法消除，刚刚才从眉间消散，却又涌上了心头。
 
-When spring came, the Ugly Duckling saw his reflection in the water. He was no longer gray and awkward — he had grown into a beautiful, graceful white swan! His long neck curved elegantly, and his feathers were as white as snow.
-
-The other swans welcomed him, and children threw bread and cake to him. The Ugly Duckling, now a handsome swan, spread his wings and felt truly happy. He had finally found where he belonged.
-
-Remember, dear baby: true beauty comes from within, and everyone grows at their own pace.`
+【诗词赏析】
+这是李清照思念丈夫赵明诚时所作。"才下眉头，却上心头"是写相思的绝妙之笔，将无形的情感赋予了动态的美感。全词清丽婉约，情真意切，读来如同清泉流过心间。`
   },
   {
-    tag: "Bedtime Story",
-    title: "Goodnight Moon",
-    text: `In the great green room, there was a little bunny lying in bed. The moon was shining brightly through the window, casting a soft silver light on everything.
+    tag: "北宋·苏轼",
+    title: "念奴娇·赤壁怀古",
+    text: `大江东去，浪淘尽，千古风流人物。
+故垒西边，人道是，三国周郎赤壁。
+乱石穿空，惊涛拍岸，卷起千堆雪。
+江山如画，一时多少豪杰。
 
-"Goodnight room," said the little bunny. "Goodnight moon. Goodnight cow jumping over the moon."
+遥想公瑾当年，小乔初嫁了，雄姿英发。
+羽扇纶巾，谈笑间，樯橹灰飞烟灭。
+故国神游，多情应笑我，早生华发。
+人生如梦，一尊还酹江月。
 
-The bunny looked around the room and said goodnight to everything he saw. "Goodnight light, and the red balloon. Goodnight bears, goodnight chairs. Goodnight kittens, and goodnight mittens. Goodnight clocks, and goodnight socks."
+【白话译文】
+大江浩荡向东流去，浪花淘尽了千古以来的英雄豪杰。旧时营垒的西边，人们说是三国时周瑜大破曹军的赤壁。嶙峋的乱石直插云空，惊涛骇浪拍击着江岸，卷起千堆雪白的浪花。江山美如图画，一时间涌现了多少英雄豪杰。
 
-He looked out the window at the stars twinkling in the night sky. "Goodnight stars," he whispered. "Goodnight air. Goodnight noises everywhere."
+遥想当年的周瑜，小乔刚刚嫁给他，英姿勃发。他手摇羽扇头戴纶巾，谈笑之间，曹操的战船就化为灰烬。神游故国，多情的人该笑我过早生了白发。人生如同一场梦，还是举起酒杯，敬这江上的明月吧。
 
-The little bunny snuggled under his warm blanket. The moon smiled down at him, and the stars winked their gentle eyes. A soft breeze sang a lullaby through the trees.
-
-"Goodnight, little one," the moon said softly. "Sleep tight and dream sweet dreams. Tomorrow is a new day full of adventures."
-
-The little bunny closed his eyes, a peaceful smile on his face. He drifted into a dream where he was flying over the moon, playing with the stars, and dancing with the cow who jumped so high.
-
-And somewhere in the great green room, a clock ticked softly, keeping time with the gentle rhythm of a baby's heartbeat.`
+【诗词赏析】
+这是苏轼豪放词的代表作。"大江东去"开篇气势磅礴，"人生如梦"结尾超然物外。全词将壮阔的历史与深沉的人生感慨融为一体，读来令人荡气回肠，是豪放词的不朽经典。`
   },
   {
-    tag: "Classic Fairy Tale",
-    title: "Goldilocks and the Three Bears",
-    text: `Once upon a time, there were three bears who lived in a little house in the forest. There was Papa Bear, Mama Bear, and Baby Bear.
+    tag: "北宋·柳永",
+    title: "雨霖铃·寒蝉凄切",
+    text: `寒蝉凄切，对长亭晚，骤雨初歇。
+都门帐饮无绪，留恋处，兰舟催发。
+执手相看泪眼，竟无语凝噎。
+念去去，千里烟波，暮霭沉沉楚天阔。
 
-One morning, the bears made some porridge for breakfast. It was too hot to eat, so they went for a walk in the forest while it cooled down.
+多情自古伤离别，更那堪，冷落清秋节！
+今宵酒醒何处？杨柳岸，晓风残月。
+此去经年，应是良辰好景虚设。
+便纵有千种风情，更与何人说？
 
-A little girl named Goldilocks was walking in the forest. She saw the bears' house and knocked on the door. When no one answered, she walked inside.
+【白话译文】
+秋后的蝉叫得凄凉急促，面对着长亭正是傍晚时分，一阵急雨刚刚停歇。在京城门外设宴饯行，却没有心情饮酒，正留恋不舍时，船上的人催着出发。握着手互相看着泪眼，竟然哽咽说不出一句话。想到这一去，千里烟波浩渺，傍晚的云雾笼罩着南方辽阔的天空。
 
-On the table, she saw three bowls of porridge. She tasted Papa Bear's porridge. "This porridge is too hot!" she said. She tasted Mama Bear's porridge. "This porridge is too cold!" Then she tasted Baby Bear's porridge. "This porridge is just right!" And she ate it all up.
+多情的人自古以来就为离别而伤感，更何况是在这冷落的清秋时节！今夜酒醒时会在什么地方？怕是只有杨柳岸边，吹着晨风，望着残月了。这一去要经过多少年，想来那些良辰美景也都成了虚设。即使有千种深情，又能向谁诉说呢？
 
-Goldilocks felt tired, so she went to the living room. She sat in Papa Bear's chair. "This chair is too big!" She sat in Mama Bear's chair. "This chair is too soft!" Then she sat in Baby Bear's chair. "This chair is just right!" But when she sat down, the chair broke!
-
-Goldilocks went upstairs to the bedroom. She lay down in Papa Bear's bed. "This bed is too hard!" She lay in Mama Bear's bed. "This bed is too soft!" Then she lay in Baby Bear's bed. "This bed is just right!" And she fell fast asleep.
-
-When the bears came home, they discovered someone had been eating their porridge, sitting in their chairs, and sleeping in their beds! Baby Bear cried, "Someone's been eating my porridge, and it's all gone! Someone's been sitting in my chair, and it's broken! Someone's been sleeping in my bed, and here she is!"
-
-Goldilocks woke up, saw the three bears, and ran out of the house as fast as she could. She never went back to the forest again, and the three bears lived happily ever after.`
+【诗词赏析】
+柳永此词是婉约派写离别的代表作。"杨柳岸，晓风残月"被誉为千古名句，画面感极强。全词将离别之情写得缠绵悱恻、动人心弦。`
   },
   {
-    tag: "Bedtime Story",
-    title: "The Star's Gift",
-    text: `High up in the night sky, there lived a kind little star. Every evening, she would peek out from behind the clouds and look down at all the children on Earth.
+    tag: "南宋·李清照",
+    title: "醉花阴·薄雾浓云愁永昼",
+    text: `薄雾浓云愁永昼，瑞脑销金兽。
+佳节又重阳，玉枕纱厨，半夜凉初透。
+东篱把酒黄昏后，有暗香盈袖。
+莫道不销魂，帘卷西风，人比黄花瘦。
 
-"Tonight, I will choose one special child and send them a gift," the little star said. She twinkled and danced across the sky, looking for a child who needed sweet dreams.
+【白话译文】
+薄雾弥漫浓云笼罩，愁闷地度过这漫长的白天。龙脑香在金兽炉中慢慢燃尽。又到了重阳佳节，躺在玉枕纱帐中，半夜里凉意透进来了。黄昏后在东边篱笆旁端着酒杯，有淡淡的菊花幽香沾满衣袖。别说这不让人黯然神伤，当西风卷起窗帘，人比那菊花还要消瘦。
 
-She found a little baby lying in a cozy crib, looking up at the window with curious eyes. "This child is still awake," the star said gently. "Let me send a dream of flying and dancing."
-
-The little star reached up and gathered some silver moonlight in her hands. She shaped it into a tiny star-shaped dream and blew it softly toward Earth.
-
-The dream floated down through the clouds, drifted past the treetops, slipped through the open window, and landed gently on the baby's pillow. It smelled like flowers and honey and warm hugs.
-
-The baby breathed in the sweet scent, yawned a big yawn, and slowly closed her eyes. A peaceful smile spread across her face.
-
-In the dream, the baby flew up to the sky and held hands with the little star. Together, they danced around the moon, slid down the Milky Way, and played hide-and-seek with all the other stars.
-
-"Goodnight, little one," the star whispered. "I will watch over you until morning comes."
-
-And as the baby slept, the little star stayed right above her window, shining extra bright, making sure the night was full of love and gentle dreams.`
+【诗词赏析】
+这是李清照写给丈夫赵明诚的相思之作。"人比黄花瘦"是传诵千古的名句，以菊花之瘦衬托人之憔悴，将相思之情写得含蓄而深沉。全词意境优美，香气、凉意、花影交织，适合秋夜吟诵。`
   },
   {
-    tag: "Classic Fairy Tale",
-    title: "The Three Little Pigs",
-    text: `Once upon a time, there were three little pigs who grew up and were ready to leave home. Their mother said, "Go out into the world and build your own houses. But be careful of the big bad wolf!"
+    tag: "南唐·李煜",
+    title: "虞美人·春花秋月何时了",
+    text: `春花秋月何时了？往事知多少。
+小楼昨夜又东风，故国不堪回首月明中。
+雕栏玉砌应犹在，只是朱颜改。
+问君能有几多愁？恰似一江春水向东流。
 
-The first little pig was lazy. He built his house quickly out of straw. "Now I can play!" he said.
+【白话译文】
+春花开了又谢，秋月圆了又缺，这轮回何时才能了结？往事又能记得多少？昨夜小楼上又吹来了东风，在这明月之中，不忍回首那已经灭亡的故国。那雕花的栏杆和白玉的台阶应该还在吧，只是人的容颜已经苍老了。你问我能有多少愁？就像一江春水滚滚向东流去。
 
-The second little pig wanted to play too, but he thought straw was too weak. He built his house out of wood. It was stronger than straw, but he built it very fast so he could still have time to play.
-
-The third little pig was hardworking and wise. He knew the wolf was dangerous, so he built his house out of strong bricks. It took him a long time, but he made sure every brick was placed perfectly.
-
-One day, the big bad wolf came to the first pig's straw house. "Little pig, little pig, let me come in!" he called. "Not by the hair on my chinny chin chin!" said the pig. "Then I'll huff and I'll puff and I'll blow your house down!" And the wolf blew, and the straw house fell down!
-
-The first pig ran to his brother's wooden house. But the wolf came and blew that house down too! Both pigs ran to the third pig's brick house.
-
-The wolf huffed and puffed, but the brick house was too strong. He tried to climb down the chimney, but the third little pig had built a fire. The wolf fell into the hot fire and ran away, never to return.
-
-The three little pigs learned that hard work and patience always pay off. They lived happily ever after in the strong brick house.`
+【诗词赏析】
+这是李煜的绝命词，也是写愁的千古绝唱。"问君能有几多愁？恰似一江春水向东流"将无形的愁苦化为有形的江水，气势磅礴又凄美无比。全词以自然永恒反衬人事无常，读来令人唏嘘。`
   }
 ];
 
 const musicNames = [
-  "月光摇篮曲 - 柔和钢琴",
-  "星星小夜曲 - 梦幻旋律",
-  "云朵漂浮曲 - 轻音乐",
-  "花园漫步曲 - 古典钢琴",
-  "雨滴轻舞曲 - 宁静旋律",
-  "晨光唤醒曲 - 温柔钢琴",
-  "银河漫游曲 - 梦幻音乐"
+  "高山流水 - 古琴",
+  "梅花三弄 - 古琴",
+  "春江花月夜 - 琵琶",
+  "渔舟唱晚 - 古筝",
+  "平湖秋月 - 广东音乐",
+  "二泉映月 - 二胡",
+  "阳关三叠 - 古琴"
 ];
 
 // ============ STATE ============
@@ -1349,18 +1308,20 @@ async function initTone() {
   }
 }
 
-// 播放舒缓的胎教音乐
+// 播放中国古典风格胎教音乐（五声音阶：宫商角徵羽 = C D E G A）
 function playMusic() {
   if (loop) loop.dispose();
-  
-  // 简单的摇篮曲旋律（C大调，舒缓）
+
+  // 中国五声音阶旋律（D宫调式，舒缓悠扬）
   const melody = [
-    'C4', null, 'E4', null, 'G4', null, 'E4', null,
-    'F4', null, 'A4', null, 'G4', null, 'F4', null,
-    'E4', null, 'D4', null, 'C4', null, null, null,
-    'G3', null, 'B3', null, 'D4', null, 'C4', null
+    'D4', null, 'E4', null, 'G4', null, 'A4', null,
+    'A4', null, 'G4', null, 'E4', null, 'D4', null,
+    'E4', null, 'G4', null, 'A4', null, 'A4', null,
+    'G4', null, 'E4', null, 'D4', null, null, null,
+    'A3', null, 'D4', null, 'E4', null, 'G4', null,
+    'E4', null, 'D4', null, 'A3', null, 'D4', null
   ];
-  
+
   let i = 0;
   loop = new Tone.Loop(time => {
     if (i >= melody.length) i = 0;
@@ -1370,7 +1331,7 @@ function playMusic() {
     }
     i++;
   }, '4n').start(0);
-  
+
   Tone.Transport.start();
   isPlaying = true;
   updatePlayBtn();
@@ -1471,13 +1432,17 @@ function playNativeMusic() {
   updatePlayBtn();
   startTimer();
 
+  // 中国五声音阶频率（D宫调式：D E G A B D E）
+  // D4=293.66, E4=329.63, G4=392.00, A4=440.00, B4=493.88, D5=587.33, E5=659.25
   const notes = [
-    261.63, 329.63, 392.00, 329.63,
-    349.23, 440.00, 392.00, 349.23,
-    329.63, 293.66, 261.63, 261.63,
-    196.00, 246.94, 293.66, 261.63
+    293.66, 329.63, 392.00, 440.00,
+    440.00, 392.00, 329.63, 293.66,
+    329.63, 392.00, 440.00, 440.00,
+    392.00, 329.63, 293.66, 293.66,
+    220.00, 293.66, 329.63, 392.00,
+    329.63, 293.66, 220.00, 293.66
   ];
-  const beats = [1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,2];
+  const beats = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,2,2, 1,1,1,1, 1,1,1,2];
   const tempo = 0.55; // 秒/拍
 
   let index = 0;
@@ -1581,7 +1546,7 @@ function updateProgress() {
 
   const musicTip = document.getElementById('musicTip');
   if (musicTip) {
-    musicTip.textContent = `宝宝，这是爸爸和妈妈为你准备的音乐。${weeks}周的你已经能听到更多声音啦，音量要刚刚好，像爸爸妈妈轻声说话那样温柔。播放时，妈妈可以把手轻轻放在肚皮上，爸爸可以俯下身轻声说说话——宝宝最喜欢听爸爸妈妈的声音了。`;
+    musicTip.textContent = `宝宝，这是爸爸和妈妈为你准备的中国古典音乐。${weeks}周的你已经能听到更多声音啦，五声音阶的旋律最符合中文韵律，音量要刚刚好，像爸爸妈妈轻声说话那样温柔。播放时，妈妈可以把手轻轻放在肚皮上，爸爸可以轻声吟诵一首唐诗——宝宝最喜欢听爸爸妈妈的声音了。`;
   }
 }
 
@@ -1807,24 +1772,19 @@ function loadStories() {
 }
 
 function renderStory(lang) {
+  // 停止正在进行的朗读
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+
   const story = lang === 'zh' ? window._zhStory : window._enStory;
   document.getElementById('storyTag').textContent = story.tag;
   document.getElementById('storyTitle').textContent = story.title;
   document.getElementById('storyText').textContent = story.text;
 
-  // 设置音频源
-  const audio = document.getElementById('storyAudio');
-  const idx = lang === 'zh' ? window._zhIndex : window._enIndex;
-  const prefix = lang === 'zh' ? 'zh' : 'en';
-  const fileNum = String(idx + 1).padStart(2, '0');  // 1→01, 2→02, etc.
-  audio.src = `audio/${prefix}_${fileNum}.mp3`;
-  audio.load();
-
   // 重置按钮状态
   const btn = document.getElementById('storyVoiceBtn');
   if (btn) btn.classList.remove('playing');
   const textEl = document.getElementById('voiceBtnText');
-  if (textEl) textEl.textContent = '播放故事 🔊';
+  if (textEl) textEl.textContent = '朗读诗词 🔊';
   isAudioPlaying = false;
 }
 
@@ -1835,112 +1795,123 @@ function switchTab(lang) {
   renderStory(lang);
 }
 
-// ============ STORY AUDIO (专业配音) ============
+// ============ POETRY READING (Web Speech API 语音合成) ============
 let isAudioPlaying = false;
 
 function toggleStoryAudio() {
-  const audio = document.getElementById('storyAudio');
-  if (!audio || !audio.src || audio.src === window.location.href) {
-    alert('音频文件加载中，请稍后再试');
+  if (!window.speechSynthesis) {
+    alert('您的浏览器不支持语音朗读功能');
     return;
   }
+
   if (isAudioPlaying) {
-    audio.pause();
+    // 停止朗读
+    window.speechSynthesis.cancel();
     isAudioPlaying = false;
     updateAudioBtnText();
     document.getElementById('storyVoiceBtn').classList.remove('playing');
-  } else {
-    audio.play().then(() => {
-      isAudioPlaying = true;
-      updateAudioBtnText();
-      document.getElementById('storyVoiceBtn').classList.add('playing');
-    }).catch(err => {
-      console.error('播放失败:', err);
-      // Fallback: 提示用户交互
-      alert('请先点击页面任意位置，再点击播放按钮');
-    });
+    return;
   }
+
+  // 获取当前诗词文本（只朗读诗词正文，不含译文和赏析）
+  const story = currentLang === 'zh' ? window._zhStory : window._enStory;
+  let poemText = story.text;
+
+  // 截取【白话译文】之前的部分作为诗词正文
+  const cutIdx = poemText.indexOf('【白话译文】');
+  if (cutIdx > 0) {
+    poemText = poemText.substring(0, cutIdx).trim();
+  }
+
+  // 先朗读标题
+  const fullText = story.title + '。' + poemText;
+
+  const utterance = new SpeechSynthesisUtterance(fullText);
+  utterance.lang = 'zh-CN';
+  utterance.rate = 0.7;   // 慢速朗读，适合胎教
+  utterance.pitch = 1.1;   // 略高音调，温柔感
+  utterance.volume = 1.0;
+
+  utterance.onend = function() {
+    isAudioPlaying = false;
+    updateAudioBtnText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+  };
+
+  utterance.onerror = function() {
+    isAudioPlaying = false;
+    updateAudioBtnText();
+    document.getElementById('storyVoiceBtn').classList.remove('playing');
+  };
+
+  window.speechSynthesis.cancel(); // 清除可能残留的朗读
+  window.speechSynthesis.speak(utterance);
+  isAudioPlaying = true;
+  updateAudioBtnText();
+  document.getElementById('storyVoiceBtn').classList.add('playing');
 }
 
-// 音频播放完成
+// 兼容旧调用（不再需要音频事件监听）
 function setupAudioEvents() {
-  const audio = document.getElementById('storyAudio');
-  if (!audio) return;
-  audio.addEventListener('ended', function() {
-    isAudioPlaying = false;
-    updateAudioBtnText();
-    const btn = document.getElementById('storyVoiceBtn');
-    if (btn) btn.classList.remove('playing');
-  });
-  audio.addEventListener('pause', function() {
-    isAudioPlaying = false;
-    updateAudioBtnText();
-    const btn = document.getElementById('storyVoiceBtn');
-    if (btn) btn.classList.remove('playing');
-  });
-  audio.addEventListener('play', function() {
-    isAudioPlaying = true;
-    updateAudioBtnText();
-  });
+  // Web Speech API 不需要 setupAudioEvents，保留空函数防止调用报错
 }
 
 function updateAudioBtnText() {
   const textEl = document.getElementById('voiceBtnText');
   if (!textEl) return;
-  textEl.textContent = isAudioPlaying ? '暂停播放 ⏸' : '播放故事 ▶';
+  textEl.textContent = isAudioPlaying ? '暂停朗读 ⏸' : '朗读诗词 🔊';
 }
 
-// ============ VIDEO / ANIMATION (每日胎教动画) ============
-// 国外动画片（YouTube 嵌入，适合胎教，3-5分钟）
-// 说明：YouTube 在某些地区可能无法访问，备用提示会引导用户
+// ============ VIDEO / ANIMATION (每日古典动画) ============
+// 国外精选：YouTube 中国古典音乐/水墨画视频（古琴、古筝、琵琶等）
 const internationalVideos = [
   {
-    id: 'XzfCWwG6Gg',
-    title: 'Baby Einstein - Baby Beethoven ( calming classical music for babies)',
-    duration: '04:32',
-    tip: '莫扎特音乐有助于胎儿听觉发育，音量调至微微能听见即可'
+    id: '2L-LkXBnrE4',
+    title: '閒逸田園 — 古筝·琵琶·竹笛 一小时传统中国风音乐',
+    duration: '60:00',
+    tip: '古筝与竹笛交织出如水墨画般的自由旋律，适合冥想或夜晚入眠时聆听'
   },
   {
-    id: 'QwTMQhGQXg',
-    title: 'Relaxing Baby Music - Mozart for Brain Development',
-    duration: '03:45',
-    tip: '古典音乐可以刺激宝宝的听觉神经，建议每天固定时间播放'
+    id: '5rGGE9BxO9Y',
+    title: '深層放鬆 — 古筝·琵琶·竹笛·二胡 中国古典疗愈音乐',
+    duration: '70:00',
+    tip: '古筝琵琶竹笛二胡交织出疗愈氛围，每天播放让身心回归平静'
   },
   {
-    id: '_NVEvF23O0',
-    title: 'Baby Sleep Music - Gentle Lullabies for pregnant moms',
-    duration: '05:00',
-    tip: '舒缓的大提琴声可以稳定妈妈的心率，宝宝也会跟着放松'
+    id: 'iEkQORXpDT4',
+    title: '听风入静 — 古筝·竹笛 一小时禅意中国风音乐',
+    duration: '60:00',
+    tip: '禅意古筝旋律如清风拂面，适合孕妈闭眼静心，感受东方之美'
   },
   {
-    id: 'JWbjKFKjbrk',
-    title: 'Nature for Babies - Ocean Waves & Soft Piano',
-    duration: '04:18',
-    tip: '海浪声和白噪音对胎儿有安抚作用，孕妈可以闭眼一起放松'
+    id: 'tbkZoPtEBE0',
+    title: '风雅古韵 — 古筝·琵琶·竹笛·二胡 中国风纯音乐',
+    duration: '70:00',
+    tip: '古风雅韵，古筝琵琶竹笛二胡合奏，独特的中国风韵味让妈妈和宝宝一起放松'
   },
   {
-    id: 'Rfph8mKz8s',
-    title: 'Baby Mozart Effect - Classical Music for Intelligence',
-    duration: '03:55',
-    tip: '研究认为莫扎特的音乐结构有助于空间想象力的发展'
+    id: 'e9mcT2WSTJI',
+    title: ' Sacred Temple Bells — 二胡·古琴·竹笛 禅意古风音乐',
+    duration: '155:00',
+    tip: '古寺钟声配合二胡古琴，如置身云雾缭绕的深山古寺，让心灵归于宁静'
   },
   {
-    id: 'WqJv-wMXzc',
-    title: 'Gentle Animation for Babies - Colorful Visuals with lullaby',
-    duration: '04:40',
-    tip: '柔和色彩动画可以刺激胎儿的视觉神经发育，注意亮度不要太高'
+    id: '-d7SpR7lB94',
+    title: '中国风纯音乐 — 古筝·琵琶·竹笛·二胡 放松心情',
+    duration: '60:00',
+    tip: '温柔细腻的中国传统旋律，带你进入放松、宁静与内在平衡的状态'
   },
   {
-    id: 'FQv2C3VG-w',
-    title: 'Pregant Belly Time - Soothing Music for Baby in Womb',
-    duration: '05:00',
-    tip: '这首歌专为胎教设计，模拟子宫内的声音环境，让宝宝有安全感'
+    id: 'CjLb8wj1qks',
+    title: '古筝疗愈旋律 — 冥想·放松·平和心灵',
+    duration: '60:00',
+    tip: '悠扬细腻的古筝旋律融合东方古风，陪伴你放慢脚步，远离压力'
   }
 ];
 
-// 国内动画片（直链MP4，完全无广告）
-// 如何替换成你自己的无广告动画片：
-//   1. 找视频：微信视频号、腾讯视频等平台找到想要的动画片（3-5分钟）
+// 国内精选：直链MP4，完全无广告
+// 如何替换成你自己的无广告古典文化动画：
+//   1. 找视频：微信视频号、腾讯视频等平台找到古典文化/水墨动画（3-5分钟）
 //   2. 下载MP4：用浏览器插件（如 Video DownloadHelper）或录屏下载为MP4
 //   3. 上传得直链：把MP4上传到可访问的地方，获得直链：
 //      - 方案A（推荐）：上传到本项目的GitHub仓库（小文件直接提交）
@@ -1950,27 +1921,27 @@ const internationalVideos = [
 const domesticVideos = [
   {
     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny_512kb.mp4',
-    title: '小兔宝贝（示例动画 · 请见上方注释替换）',
+    title: '水墨田园（示例 · 请替换为古典文化动画）',
     duration: '03:32',
-    tip: '💡 这是示例视频——请按代码注释说明替换成你的无广告动画片'
+    tip: '💡 请替换为水墨动画或古典诗词动画——替换方法见代码注释'
   },
   {
     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    title: '梦幻之旅（示例动画 · 请替换）',
+    title: '山水梦境（示例 · 请替换为古典文化动画）',
     duration: '04:15',
-    tip: '💡 替换方法：把你的MP4文件上传网上，把直链填入 url 字段'
+    tip: '💡 建议替换为山水画动画或古琴演奏视频'
   },
   {
     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-    title: '小飞龙（示例动画 · 请替换）',
+    title: '古风动画（示例 · 请替换为古典文化动画）',
     duration: '03:58',
-    tip: '柔和色彩动画可以刺激胎儿的视觉神经发育，亮度调低保护眼睛'
+    tip: '💡 建议替换为中国风动画短片或诗词意境动画'
   },
   {
     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-    title: '未来世界（示例动画 · 请替换）',
+    title: '诗意江南（示例 · 请替换为古典文化动画）',
     duration: '04:32',
-    tip: '动画色彩丰富但不刺眼，建议把屏幕亮度调至最低舒适档'
+    tip: '💡 建议替换为江南水墨动画或古筝演奏视频'
   }
 ];
 
@@ -2011,7 +1982,7 @@ function loadTodayVideo() {
   // 更新信息
   const label = video.type === 'international' ? '🌍 国外精选' : '🇨🇳 国内精选（无广告）';
   info.innerHTML = `<strong>${video.title}</strong><br>时长：${video.duration} · ${label}`;
-  if (source) source.textContent = video.type === 'international' ? 'Source: YouTube · 需网络访问' : '直链MP4 · 完全无广告';
+  if (source) source.textContent = video.type === 'international' ? '来源：YouTube · 中国古典音乐' : '来源：直链MP4 · 完全无广告';
 
   // 根据类型嵌入视频
   if (video.type === 'international') {
