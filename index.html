@@ -5,7 +5,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-<!-- Version: 20260820085126 (Cache Buster) -->
+<!-- Version: 20260820093053 (Cache Buster) -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -993,8 +993,8 @@ body {
 
   <!-- Video / Animation -->
   <div class="video-card" id="videoCard">
-    <div class="video-title">🎬 今日古典动画</div>
-    <div class="video-badge" id="videoBadge">每日自动更新</div>
+    <div class="video-title">🎬 今日动画 · B站精选</div>
+    <div class="video-badge" id="videoBadge">每日轮换 · 国内可打开</div>
     <div class="video-wrapper" id="videoWrapper">
       <div id="videoPlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;background:#0a0a0a;border-radius:16px;">
         动画加载中...
@@ -1647,112 +1647,56 @@ function updateAudioBtnText() {
   textEl.textContent = isAudioPlaying ? '暂停朗读 ⏸' : '朗读诗词 🔊';
 }
 
-// ============ VIDEO / ANIMATION (每日古典动画) ============
-// 国外精选：YouTube 中国古典音乐/水墨画视频（古琴、古筝、琵琶等）
-const internationalVideos = [
+// ============ VIDEO / ANIMATION（每日 B 站动画）============
+// 之前用 YouTube + 国外直链，国内打不开。现改为 Bilibili 嵌入播放，国内可正常打开。
+// 全部为适合胎教的中国风 / 水墨 / 古诗动画，按日期每日轮换。
+const bilibiliVideos = [
   {
-    id: '2L-LkXBnrE4',
-    title: '閒逸田園 — 古筝·琵琶·竹笛 一小时传统中国风音乐',
-    duration: '60:00',
-    tip: '古筝与竹笛交织出如水墨画般的自由旋律，适合冥想或夜晚入眠时聆听'
+    bvid: 'BV16pSYBnE9e',
+    title: '百变马丁·我爱古诗词（水墨画风古诗动画）',
+    duration: '单集约 5 分钟',
+    tip: '赏心悦目的水墨画风古诗词动画，专业朗读与释义，适合胎教启蒙'
   },
   {
-    id: '5rGGE9BxO9Y',
-    title: '深層放鬆 — 古筝·琵琶·竹笛·二胡 中国古典疗愈音乐',
-    duration: '70:00',
-    tip: '古筝琵琶竹笛二胡交织出疗愈氛围，每天播放让身心回归平静'
+    bvid: 'BV1km4y1n7nm',
+    title: '小蝌蚪找妈妈（4K修复·经典水墨动画）',
+    duration: '约 15 分钟',
+    tip: '中国第一部水墨动画片，画面恬静优美，宝宝对柔和动态光影很敏感'
   },
   {
-    id: 'iEkQORXpDT4',
-    title: '听风入静 — 古筝·竹笛 一小时禅意中国风音乐',
-    duration: '60:00',
-    tip: '禅意古筝旋律如清风拂面，适合孕妈闭眼静心，感受东方之美'
+    bvid: 'BV1sNiYBREv2',
+    title: '牧笛（1963·水墨动画）',
+    duration: '约 20 分钟',
+    tip: '牧童吹笛引牛归家的诗意水墨动画，节奏舒缓，最适合睡前放松'
   },
   {
-    id: 'tbkZoPtEBE0',
-    title: '风雅古韵 — 古筝·琵琶·竹笛·二胡 中国风纯音乐',
-    duration: '70:00',
-    tip: '古风雅韵，古筝琵琶竹笛二胡合奏，独特的中国风韵味让妈妈和宝宝一起放松'
+    bvid: 'BV1JQTmzBEdU',
+    title: '九色鹿（上美·4K经典动画）',
+    duration: '约 25 分钟',
+    tip: '敦煌壁画风格经典动画，色彩与意境俱佳，适合亲子共赏'
   },
   {
-    id: 'e9mcT2WSTJI',
-    title: ' Sacred Temple Bells — 二胡·古琴·竹笛 禅意古风音乐',
-    duration: '155:00',
-    tip: '古寺钟声配合二胡古琴，如置身云雾缭绕的深山古寺，让心灵归于宁静'
+    bvid: 'BV12C4y1Y7s1',
+    title: '不白吃古诗词漫游记（第一季）',
+    duration: '单集约 6 分钟',
+    tip: '用有趣的故事讲古诗词背后的典故，轻松好懂'
   },
   {
-    id: '-d7SpR7lB94',
-    title: '中国风纯音乐 — 古筝·琵琶·竹笛·二胡 放松心情',
-    duration: '60:00',
-    tip: '温柔细腻的中国传统旋律，带你进入放松、宁静与内在平衡的状态'
-  },
-  {
-    id: 'CjLb8wj1qks',
-    title: '古筝疗愈旋律 — 冥想·放松·平和心灵',
-    duration: '60:00',
-    tip: '悠扬细腻的古筝旋律融合东方古风，陪伴你放慢脚步，远离压力'
+    bvid: 'BV1e21ZBKEUZ',
+    title: '国产经典动画片55部合集（高清修复）',
+    duration: '合集·可挑选',
+    tip: '小蝌蚪找妈妈、九色鹿、牧笛等经典一网打尽，随时换着看'
   }
 ];
 
-// 国内精选：直链MP4，完全无广告
-// 如何替换成你自己的无广告古典文化动画：
-//   1. 找视频：微信视频号、腾讯视频等平台找到古典文化/水墨动画（3-5分钟）
-//   2. 下载MP4：用浏览器插件（如 Video DownloadHelper）或录屏下载为MP4
-//   3. 上传得直链：把MP4上传到可访问的地方，获得直链：
-//      - 方案A（推荐）：上传到本项目的GitHub仓库（小文件直接提交）
-//      - 方案B：上传到云存储（阿里云OSS、腾讯云COS）并开启公开访问
-//      - 方案C：上传到 Internet Archive（archive.org）获得永久直链
-//   4. 填入下方：把获得的MP4直链填入对应条目的 url 字段即可
-const domesticVideos = [
-  {
-    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny_512kb.mp4',
-    title: '水墨田园（示例 · 请替换为古典文化动画）',
-    duration: '03:32',
-    tip: '💡 请替换为水墨动画或古典诗词动画——替换方法见代码注释'
-  },
-  {
-    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    title: '山水梦境（示例 · 请替换为古典文化动画）',
-    duration: '04:15',
-    tip: '💡 建议替换为山水画动画或古琴演奏视频'
-  },
-  {
-    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-    title: '古风动画（示例 · 请替换为古典文化动画）',
-    duration: '03:58',
-    tip: '💡 建议替换为中国风动画短片或诗词意境动画'
-  },
-  {
-    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-    title: '诗意江南（示例 · 请替换为古典文化动画）',
-    duration: '04:32',
-    tip: '💡 建议替换为江南水墨动画或古筝演奏视频'
-  }
-];
-
-// 根据日期选择今日视频（奇数日国外，偶数日国内）
+// 根据日期选择今日动画（按年内天数轮换，保证每天不同、无周期重复陷阱）
 function getTodayVideo() {
-  const dayIdx = getDayIndex();
-  const useInternational = (dayIdx % 2 === 1); // 奇数日国外
-  if (useInternational) {
-    const index = Math.floor(dayIdx / 2) % internationalVideos.length;
-    return { ...internationalVideos[index], type: 'international' };
-  } else {
-    const index = Math.floor(dayIdx / 2) % domesticVideos.length;
-    return { ...domesticVideos[index], type: 'domestic' };
-  }
+  const dayIdx = getDayIndex();                 // 1-366
+  const index = (dayIdx - 1) % bilibiliVideos.length;
+  return { ...bilibiliVideos[index], type: 'bilibili' };
 }
 
-// 获取日期在年内的第几天（1-366）
-function getDayOfYear() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start;
-  const oneDay = 1000 * 60 * 60 * 24;
-  return Math.floor(diff / oneDay);
-}
-
-// 加载今日视频
+// 加载今日动画（Bilibili 嵌入播放）
 function loadTodayVideo() {
   const video = getTodayVideo();
   const wrapper = document.getElementById('videoWrapper');
@@ -1760,49 +1704,24 @@ function loadTodayVideo() {
   const source = document.getElementById('videoSource');
   const placeholder = document.getElementById('videoPlaceholder');
   const frame = document.getElementById('videoFrame');
-  let videoEl = document.getElementById('videoPlayer');
+
+  // 清理可能存在的旧 <video> 元素（避免与 iframe 冲突）
+  const oldVideo = document.getElementById('videoPlayer');
+  if (oldVideo && oldVideo.parentNode) oldVideo.parentNode.removeChild(oldVideo);
 
   if (!wrapper || !info) return;
 
-  // 更新信息
-  const label = video.type === 'international' ? '🌍 国外精选' : '🇨🇳 国内精选（无广告）';
+  const label = '🅑 哔哩哔哩（B站）';
   info.innerHTML = `<strong>${video.title}</strong><br>时长：${video.duration} · ${label}`;
-  if (source) source.textContent = video.type === 'international' ? '来源：YouTube · 中国古典音乐' : '来源：直链MP4 · 完全无广告';
+  if (source) source.textContent = '来源：Bilibili 嵌入播放 · 国内可正常打开';
 
-  // 根据类型嵌入视频
-  if (video.type === 'international') {
-    // YouTube 嵌入
-    if (placeholder) placeholder.style.display = 'none';
-    if (videoEl) videoEl.style.display = 'none';
-    if (frame) {
-      frame.style.display = 'block';
-      frame.src = `https://www.youtube.com/embed/${video.id}?autoplay=0&rel=0&modestbranding=1`;
-    }
-  } else {
-    // 国内视频：直链MP4，无广告，使用 <video> 标签
-    if (placeholder) placeholder.style.display = 'none';
-    if (frame) frame.style.display = 'none';
-
-    // 创建或复用 <video> 元素
-    if (!videoEl) {
-      videoEl = document.createElement('video');
-      videoEl.id = 'videoPlayer';
-      videoEl.controls = true;
-      videoEl.preload = 'metadata';
-      videoEl.style.width = '100%';
-      videoEl.style.height = '100%';
-      videoEl.style.borderRadius = '16px';
-      videoEl.style.display = 'block';
-      videoEl.style.backgroundColor = '#0a0a0a';
-      wrapper.appendChild(videoEl);
-    } else {
-      videoEl.style.display = 'block';
-    }
-    videoEl.src = video.url;
-    videoEl.load();
+  // 使用 Bilibili 官方播放器嵌入（无广告、可关弹幕）
+  if (placeholder) placeholder.style.display = 'none';
+  if (frame) {
+    frame.style.display = 'block';
+    frame.src = `https://player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&danmaku=0&autoplay=0`;
   }
 
-  // 更新提示
   const tipEl = wrapper ? wrapper.parentNode.querySelector('.video-tip') : null;
   if (tipEl) tipEl.textContent = '💡 ' + video.tip;
 }
